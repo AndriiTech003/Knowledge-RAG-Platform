@@ -1,0 +1,114 @@
+<div class="kb-page">
+  <header class="kb-page-header">
+    <h1 i18n="@@admin.evalRuns.title">Evaluation runs</h1>
+    <span class="kb-spacer"></span>
+    <button mat-stroked-button type="button" [disabled]="!store.latestPair()" (click)="compareLatest()" data-testid="compare-latest">
+      <mat-icon>compare_arrows</mat-icon>
+      <span i18n="@@admin.evalRuns.compareLatest">Compare latest two</span>
+    </button>
+    <button mat-stroked-button type="button" [disabled]="!canCompare()" (click)="compareSelected()" data-testid="compare-selected" i18n="@@admin.evalRuns.compareSelected">Compare selected</button>
+    <button mat-flat-button type="button" (click)="formOpen.set(!formOpen())" data-testid="start-run-toggle">
+      <mat-icon>play_arrow</mat-icon>
+      <span i18n="@@admin.evalRuns.startRun">Start run</span>
+    </button>
+  </header>
+
+  @if (formOpen()) {
+    <form class="kb-card start" [formGroup]="form" (ngSubmit)="start()" data-testid="start-run-form">
+      <mat-button-toggle-group formControlName="mode" aria-label="Run mode" i18n-aria-label="@@admin.evalRuns.runMode">
+        <mat-button-toggle value="retrieval" i18n="@@admin.evalRuns.mode.retrieval">Retrieval only</mat-button-toggle>
+        <mat-button-toggle value="full" i18n="@@admin.evalRuns.mode.full">Full (answers + judge)</mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label i18n="@@admin.evalRuns.retrieval">Retrieval</mat-label>
+        <mat-select formControlName="retrievalMode">
+          <mat-option value="vector" i18n="@@admin.evalRuns.retrieval.vector">Vector</mat-option>
+          <mat-option value="lexical" i18n="@@admin.evalRuns.retrieval.lexical">Lexical</mat-option>
+          <mat-option value="hybrid" i18n="@@admin.evalRuns.retrieval.hybrid">Hybrid</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-slide-toggle formControlName="rerank" i18n="@@admin.evalRuns.reranker">Reranker</mat-slide-toggle>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="small">
+        <mat-label>k</mat-label>
+        <input matInput type="number" formControlName="k" min="1" max="50" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="small">
+        <mat-label i18n="@@admin.evalRuns.questionLimit">Question limit</mat-label>
+        <input matInput type="number" formControlName="limit" min="1" placeholder="all" i18n-placeholder="@@admin.evalRuns.limitAll" data-testid="run-limit" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label i18n="@@admin.evalRuns.nameOptional">Name (optional)</mat-label>
+        <input matInput formControlName="name" data-testid="run-name" />
+      </mat-form-field>
+      <button mat-flat-button type="submit" [disabled]="form.invalid || store.starting()" data-testid="start-run-submit" i18n="@@admin.evalRuns.start">Start</button>
+    </form>
+  }
+
+  @if (store.runsLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (store.activeRuns().length) {
+    <p class="active kb-muted" role="status">
+      <mat-icon inline>hourglass_top</mat-icon>
+      <span i18n="@@admin.evalRuns.active">{store.activeRuns().length, plural, one {{{ store.activeRuns().length }} run in progress — refreshing automatically.} other {{{ store.activeRuns().length }} runs in progress — refreshing automatically.}}</span>
+    </p>
+  }
+
+  <div class="kb-table-wrap">
+    <table class="runs" data-testid="eval-runs-table">
+      <thead>
+        <tr>
+          <th scope="col"><span class="kb-visually-hidden" i18n="@@admin.evalRuns.col.select">Select</span></th>
+          <th scope="col" i18n="@@admin.evalRuns.col.run">Run</th>
+          <th scope="col" i18n="@@admin.evalRuns.col.status">Status</th>
+          @for (m of headline; track m.key) {
+            <th scope="col" class="kb-num">{{ m.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (run of store.runs(); track run.id) {
+          <tr data-testid="eval-run-row" [attr.data-run-id]="run.id" [attr.data-status]="run.status" [attr.data-name]="run.config['name']">
+            <td>
+              <mat-checkbox
+                [checked]="selected().includes(run.id)"
+                [disabled]="run.status !== 'done'"
+                (change)="toggle(run, $event.checked)"
+                [attr.aria-label]="selectLabel(run)"
+                data-testid="eval-run-select"
+              />
+            </td>
+            <td>
+              <a [routerLink]="['/admin/eval/runs', run.id]" class="run-name">{{ run.config['name'] || run.id.slice(0, 8) }}</a>
+              <div class="kb-muted small-text">{{ summary(run.config) }}</div>
+              <div class="kb-muted small-text">
+                @if (run.started_at) {
+                  {{ run.started_at | relativeTime }}
+                } @else {
+                  <span i18n="@@admin.evalRuns.notStarted">not started</span>
+                }
+                @if (run.git_sha) { · {{ run.git_sha.slice(0, 7) }} }
+                @if (run.dataset_version) { · {{ run.dataset_version }} }
+              </div>
+            </td>
+            <td><kb-status-badge [status]="run.status" /></td>
+            @for (m of headline; track m.key) {
+              <td class="kb-num">
+                {{ fmt(value(run.metrics, m.key), m.kind) }}
+                @if (delta(run, m.key) !== null) {
+                  <div class="small-text" [class]="'small-text kb-delta-' + tone(delta(run, m.key), m.higherIsBetter)">
+                    {{ fmtDelta(delta(run, m.key), m.kind) }}
+                  </div>
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="3 + headline.length" class="kb-muted empty" i18n="@@admin.evalRuns.empty">No runs yet. Start one to measure retrieval quality.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

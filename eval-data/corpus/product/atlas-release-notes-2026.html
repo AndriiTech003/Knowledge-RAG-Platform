@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas Release Notes 2026 | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/product/atlas-release-notes-2026">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Atlas Release Notes 2026</h1>
+<p>This page collects the release notes for every Atlas minor version shipped in 2026. Patch releases (for example 4.2.1) contain only bug fixes and are listed in the in-app changelog. Versions are listed newest first.</p>
+<h2>Atlas 5.1 — released 15 September 2026</h2>
+<ul>
+<li><strong>Longer metric history for Enterprise:</strong> aggregated metric retention for Enterprise workspaces increased from 13 to 25 months.</li>
+<li><strong>Databricks Unity Catalog integration (beta):</strong> table and column lineage from Unity Catalog, available on Growth and Enterprise.</li>
+<li><strong>Monitor templates:</strong> 30 ready-made monitor templates for common dbt models.</li>
+<li>Fixed: CSV exports larger than 1 GB no longer time out.</li>
+</ul>
+<h2>Atlas 5.0 — released 21 July 2026</h2>
+<p>Atlas 5 is our biggest release of the year. General availability was originally planned for June and moved to 21 July 2026 to complete performance testing.</p>
+<ul>
+<li><strong>Redesigned Atlas Web App</strong> with a new incident inbox and workspace home page.</li>
+<li><strong>Snowflake cost monitors:</strong> track warehouse credit consumption per table and alert on unexpected spikes.</li>
+<li><strong>Beacon on Growth:</strong> the Beacon add-on can now be purchased by Growth workspaces (previously Enterprise only).</li>
+<li><strong>Bulk monitor editing</strong> for up to 500 monitors at once.</li>
+<li>Removed: the v1 ingestion endpoint <code>POST /v1/events</code>. Use <code>POST /v2/events</code>.</li>
+</ul>
+<h2>Atlas 4.3 — released 12 May 2026</h2>
+<ul>
+<li><strong>API rate limit headers:</strong> every public API response now includes <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code>, and tier-based API rate limits are enforced for all workspaces.</li>
+<li><strong>Anomaly detection v2:</strong> seasonality-aware volume models reduce false positives by about 35% in our benchmark.</li>
+<li><strong>Lineage export</strong> to OpenLineage JSON.</li>
+<li>Fixed: schema change monitors could fire twice for renamed columns.</li>
+</ul>
+<h2>Atlas 4.2 — released 31 March 2026</h2>
+<ul>
+<li><strong>Beacon is generally available.</strong> Alert routing, deduplication, on-call schedules and escalation policies for data incidents. Initially available to Enterprise workspaces.</li>
+<li><strong>SCIM provisioning</strong> for Enterprise workspaces with Okta and Microsoft Entra ID.</li>
+<li>Improved incident timeline with lineage context.</li>
+</ul>
+<h2>Atlas 4.1 — released 24 February 2026</h2>
+<ul>
+<li><strong>dbt Cloud integration:</strong> import dbt Cloud jobs, test results and model ownership.</li>
+<li><strong>Faster dashboards:</strong> query results are cached for 5 minutes, making repeated dashboard loads up to 4x faster.</li>
+<li>Fixed: time zone handling for freshness monitors in workspaces outside UTC.</li>
+</ul>
+<h2>Atlas 4.0 — released 20 January 2026</h2>
+<ul>
+<li><strong>New lineage graph</strong> with column-level lineage for Growth and Enterprise.</li>
+<li><strong>Streaming ingestion backend:</strong> events become queryable much faster than before; most customers see data within seconds.</li>
+<li>New error codes for ingestion limits; the code for oversized batches is now NW-E4012.</li>
+<li>Removed: legacy Atlas Collector versions below 2.0 are no longer supported.</li>
+</ul>
+<h2>Upcoming</h2>
+<p>The next minor version, Atlas 5.2, is planned for November 2026. See the Product Roadmap H2 2026 for planned features.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit()" data-testid="source-form">
+  <mat-button-toggle-group formControlName="kind" aria-label="Source type" i18n-aria-label="@@collections.sourceForm.type">
+    <mat-button-toggle value="web" i18n="@@collections.sourceForm.web">Web crawler</mat-button-toggle>
+    <mat-button-toggle value="notion" i18n="@@collections.sourceForm.notion">Notion</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (form.controls.kind.value === 'web') {
+    <div class="grid" formGroupName="web">
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label i18n="@@collections.sourceForm.startUrl">Start URL</mat-label>
+        <input matInput formControlName="startUrl" placeholder="https://docs.example.com" i18n-placeholder="@@collections.sourceForm.startUrlPlaceholder" data-testid="source-start-url" />
+        @if (web.startUrl.invalid && web.startUrl.touched) {
+          <mat-error>{{ err(web.startUrl.errors) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label i18n="@@collections.sourceForm.maxDepth">Max depth</mat-label>
+        <input matInput type="number" formControlName="maxDepth" min="0" max="5" data-testid="source-max-depth" />
+        @if (web.maxDepth.invalid) {
+          <mat-error>{{ err(web.maxDepth.errors) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label i18n="@@collections.sourceForm.maxPages">Max pages</mat-label>
+        <input matInput type="number" formControlName="maxPages" min="1" max="5000" />
+        @if (web.maxPages.invalid) {
+          <mat-error>{{ err(web.maxPages.errors) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-checkbox formControlName="respectRobots" class="wide" i18n="@@collections.sourceForm.robots">Respect robots.txt</mat-checkbox>
+
+      <fieldset class="patterns wide">
+        <legend i18n="@@collections.sourceForm.includePatterns">Include patterns (regex)</legend>
+        @for (control of web.includePatterns.controls; track control; let i = $index) {
+          <div class="pattern">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+              <input
+                matInput
+                [formControl]="control"
+                placeholder="^https://docs\\.example\\.com/guides/"
+                i18n-placeholder="@@collections.sourceForm.includePlaceholder"
+                aria-label="Include pattern"
+                i18n-aria-label="@@collections.sourceForm.includePattern"
+                data-testid="include-pattern"
+              />
+              @if (control.invalid && control.touched) {
+                <mat-error>{{ err(control.errors) }}</mat-error>
+              }
+            </mat-form-field>
+            <button mat-icon-button type="button" (click)="removePattern(web.includePatterns, i)" aria-label="Remove include pattern" i18n-aria-label="@@collections.sourceForm.removeInclude">
+              <mat-icon>remove_circle</mat-icon>
+            </button>
+          </div>
+        }
+        <button mat-button type="button" (click)="addPattern(web.includePatterns)" data-testid="add-include-pattern">
+          <mat-icon>add</mat-icon>
+          <span i18n="@@collections.sourceForm.addInclude">Add include pattern</span>
+        </button>
+      </fieldset>
+
+      <fieldset class="patterns wide">
+        <legend i18n="@@collections.sourceForm.excludePatterns">Exclude patterns (regex)</legend>
+        @for (control of web.excludePatterns.controls; track control; let i = $index) {
+          <div class="pattern">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+              <input
+                matInput
+                [formControl]="control"
+                placeholder="/archive/"
+                i18n-placeholder="@@collections.sourceForm.excludePlaceholder"
+                aria-label="Exclude pattern"
+                i18n-aria-label="@@collections.sourceForm.excludePattern"
+                data-testid="exclude-pattern"
+              />
+              @if (control.invalid && control.touched) {
+                <mat-error>{{ err(control.errors) }}</mat-error>
+              }
+            </mat-form-field>
+            <button mat-icon-button type="button" (click)="removePattern(web.excludePatterns, i)" aria-label="Remove exclude pattern" i18n-aria-label="@@collections.sourceForm.removeExclude">
+              <mat-icon>remove_circle</mat-icon>
+            </button>
+          </div>
+        }
+        <button mat-button type="button" (click)="addPattern(web.excludePatterns)" data-testid="add-exclude-pattern">
+          <mat-icon>add</mat-icon>
+          <span i18n="@@collections.sourceForm.addExclude">Add exclude pattern</span>
+        </button>
+      </fieldset>
+    </div>
+  } @else {
+    <div class="grid" formGroupName="notion">
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label i18n="@@collections.sourceForm.databaseId">Database ID (optional)</mat-label>
+        <input matInput formControlName="databaseId" placeholder="32-character Notion database id" i18n-placeholder="@@collections.sourceForm.databaseIdPlaceholder" />
+        @if (notion.databaseId.invalid) {
+          <mat-error>{{ err(notion.databaseId.errors) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label i18n="@@collections.sourceForm.query">Search query (optional)</mat-label>
+        <input matInput formControlName="query" />
+      </mat-form-field>
+    </div>
+  }
+
+  <div class="grid">
+    <mat-form-field appearance="outline">
+      <mat-label i18n="@@collections.sourceForm.schedule">Schedule</mat-label>
+      <mat-select formControlName="schedulePreset" data-testid="source-schedule">
+        <mat-option value="none" i18n="@@collections.sourceForm.scheduleNone">Manual only</mat-option>
+        <mat-option value="hourly" i18n="@@collections.sourceForm.scheduleHourly">Hourly</mat-option>
+        <mat-option value="daily" i18n="@@collections.sourceForm.scheduleDaily">Daily at 03:00</mat-option>
+        <mat-option value="weekly" i18n="@@collections.sourceForm.scheduleWeekly">Weekly (Monday 03:00)</mat-option>
+        <mat-option value="custom" i18n="@@collections.sourceForm.scheduleCustom">Custom cron…</mat-option>
+      </mat-select>
+    </mat-form-field>
+    @if (form.controls.schedulePreset.value === 'custom') {
+      <mat-form-field appearance="outline">
+        <mat-label i18n="@@collections.sourceForm.cron">Cron expression</mat-label>
+        <input matInput formControlName="cron" placeholder="0 3 * * *" data-testid="source-cron" />
+        @if (form.controls.cron.invalid && form.controls.cron.touched) {
+          <mat-error>{{ err(form.controls.cron.errors) }}</mat-error>
+        }
+      </mat-form-field>
+    }
+  </div>
+
+  <div class="actions">
+    <button mat-button type="button" (click)="cancelled.emit()" i18n="@@common.cancel">Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="saving()" data-testid="source-save">
+      @if (source()) {
+        <span i18n="@@collections.sourceForm.saveChanges">Save changes</span>
+      } @else {
+        <span i18n="@@collections.sourceForm.create">Create source</span>
+      }
+    </button>
+  </div>
+</form>

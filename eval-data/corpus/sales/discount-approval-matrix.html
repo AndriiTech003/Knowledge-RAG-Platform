@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Discount Approval Matrix | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/sales/discount-approval-matrix">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Discount Approval Matrix</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owner</td>
+<td>Tom Lindqvist, VP Sales</td>
+</tr>
+<tr>
+<td>Maintained by</td>
+<td>Deal Desk (Revenue Operations)</td>
+</tr>
+<tr>
+<td>Effective</td>
+<td>2 March 2026</td>
+</tr>
+<tr>
+<td>System</td>
+<td>Salesforce CPQ approval workflow</td>
+</tr>
+</tbody>
+</table>
+<h2>1. Purpose</h2>
+<p>This matrix defines who can approve a discount on an Atlas or Beacon quote. Discounts are measured against the list price in the current Atlas price book, on the <strong>total first-year subscription value</strong> of the quote. Approvals are captured automatically by the Salesforce CPQ approval workflow; email or Slack approvals are not valid.</p>
+<h2>2. Approval levels</h2>
+<table>
+<thead>
+<tr>
+<th>Discount off list price</th>
+<th>Approver</th>
+<th>Typical turnaround</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0% – 10%</td>
+<td>Account Executive (no further approval)</td>
+<td>Immediate</td>
+</tr>
+<tr>
+<td>10.1% – 20%</td>
+<td>Sales Director of the region that owns the account</td>
+<td>1 business day</td>
+</tr>
+<tr>
+<td>20.1% – 30%</td>
+<td>VP Sales (Tom Lindqvist)</td>
+<td>2 business days</td>
+</tr>
+<tr>
+<td>Above 30%</td>
+<td>VP Sales (Tom Lindqvist) and CFO</td>
+<td>3 business days, Deal Desk review required</td>
+</tr>
+</tbody>
+</table>
+<p>In short: AEs can discount up to 10% on their own, Sales Directors up to 20%, and anything above 20% needs the VP Sales, Tom Lindqvist.</p>
+<h2>3. Non-standard terms</h2>
+<p>Some terms require approval regardless of discount level:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Approver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Payment terms longer than net 30</td>
+<td>Deal Desk</td>
+</tr>
+<tr>
+<td>Multi-year price lock longer than 3 years</td>
+<td>VP Sales</td>
+</tr>
+<tr>
+<td>Free months or ramped pricing</td>
+<td>Sales Director</td>
+</tr>
+<tr>
+<td>Custom liability cap or SLA credits above standard</td>
+<td>Legal</td>
+</tr>
+<tr>
+<td>Beacon included at no charge</td>
+<td>VP Sales</td>
+</tr>
+</tbody>
+</table>
+<h2>4. Rules</h2>
+<ul>
+<li>Discounts for multi-year prepaid contracts are calculated per year; the deepest annual discount determines the approval level.</li>
+<li>Professional services may be discounted up to 15% by the AE; more requires Sales Director approval.</li>
+<li>Partner margins under the Partner Program are not customer discounts and do not count toward this matrix.</li>
+<li>Once approved, a discount is valid for 30 days. Expired quotes must be re-approved.</li>
+<li>Discount approvals must be obtained before the quote is sent to the customer (Stage 5 – Negotiation).</li>
+</ul>
+<h2>5. Escalation</h2>
+<p>If an approver is unavailable for more than the typical turnaround time, the request escalates automatically to the next level in Salesforce CPQ.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

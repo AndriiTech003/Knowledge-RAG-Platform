@@ -1,0 +1,114 @@
+name: knowledge-rag
+
+x-backend-env: &backend-env
+  KB_DATABASE_URL: postgresql+asyncpg://kb:kb@postgres:5432/kb
+  KB_REDIS_URL: redis://redis:6379/4
+  KB_BROKER_URL: redis://redis:6379/4
+  KB_S3_ENDPOINT: minio:9000
+  KB_S3_PUBLIC_ENDPOINT: localhost:9002
+  KB_S3_ACCESS_KEY: minioadmin
+  KB_S3_SECRET_KEY: minioadmin
+  KB_S3_BUCKET: kb
+  KB_OIDC_ISSUER: http://localhost:4480/realms/northwind
+  KB_OIDC_JWKS_URL: http://keycloak:8080/realms/northwind/protocol/openid-connect/certs
+  KB_MODELS_URL: http://models:4410
+  KB_LLM_PROVIDER: ${KB_LLM_PROVIDER:-fake}
+  KB_ANTHROPIC_API_KEY: ${KB_ANTHROPIC_API_KEY:-}
+  KB_OPENAI_API_KEY: ${KB_OPENAI_API_KEY:-}
+  KB_CORS_ORIGINS: '["http://localhost:4421","http://127.0.0.1:4421"]'
+  KB_OTEL_ENABLED: "true"
+  KB_OTEL_ENDPOINT: http://jaeger:4318/v1/traces
+  KB_EVAL_DATA_DIR: /app/eval-data
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment: { POSTGRES_USER: kb, POSTGRES_PASSWORD: kb, POSTGRES_DB: kb }
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U kb"], interval: 5s, retries: 20 }
+
+  redis:
+    image: redis:7-alpine
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, retries: 20 }
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9003"
+    environment: { MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin }
+    ports: ["9002:9000", "9003:9003"]
+    volumes: [miniodata:/data]
+    healthcheck: { test: ["CMD", "mc", "ready", "local"], interval: 5s, retries: 20 }
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm", "--http-port=8080", "--hostname=http://localhost:4480"]
+    environment: { KC_BOOTSTRAP_ADMIN_USERNAME: kcadmin, KC_BOOTSTRAP_ADMIN_PASSWORD: kcadmin, KC_HEALTH_ENABLED: "true" }
+    ports: ["4480:8080"]
+    volumes: ["./keycloak/realm-northwind.json:/opt/keycloak/data/import/realm-northwind.json:ro"]
+
+  models:
+    build: { context: .., dockerfile: backend/Dockerfile, target: models }
+    healthcheck: { test: ["CMD", "curl", "-fsS", "http://127.0.0.1:4410/health"], interval: 10s, retries: 30 }
+
+  migrate:
+    build: { context: .., dockerfile: backend/Dockerfile, target: api }
+    environment: *backend-env
+    command: ["kb-seed", "--mode", "celery", "--wait", "0"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio: { condition: service_healthy }
+
+  api:
+    build: { context: .., dockerfile: backend/Dockerfile, target: api }
+    environment: *backend-env
+    ports: ["4400:4400"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      models: { condition: service_healthy }
+
+  worker:
+    build: { context: .., dockerfile: backend/Dockerfile, target: worker }
+    environment: *backend-env
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      models: { condition: service_healthy }
+
+  beat:
+    build: { context: .., dockerfile: backend/Dockerfile, target: beat }
+    environment: *backend-env
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  web:
+    build: { context: .., dockerfile: infra/web/Dockerfile }
+    environment:
+      API_URL: http://localhost:4400
+      OIDC_AUTHORITY: http://localhost:4480/realms/northwind
+      OIDC_CLIENT_ID: kb-web
+    ports: ["4421:80"]
+    depends_on: [api]
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    environment: { COLLECTOR_OTLP_ENABLED: "true" }
+    ports: ["16686:16686"]
+
+  prometheus:
+    image: prom/prometheus:v3.0.0
+    volumes: ["./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["4490:9090"]
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment: { GF_AUTH_ANONYMOUS_ENABLED: "true", GF_AUTH_ANONYMOUS_ORG_ROLE: Admin }
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["4491:3000"]
+    depends_on: [prometheus]
+
+volumes:
+  pgdata: {}
+  miniodata: {}

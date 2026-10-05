@@ -1,0 +1,190 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$violet-palette,
+        theme-type: color-scheme,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+  @include mat.snack-bar-overrides(
+    (
+      container-shape: 12px,
+    )
+  );
+}
+
+html.kb-dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--mat-sys-primary);
+}
+
+mark {
+  background: color-mix(in srgb, var(--mat-sys-tertiary) 28%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+.kb-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.kb-page {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.kb-page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font: var(--mat-sys-headline-small);
+  }
+
+  .kb-spacer {
+    flex: 1;
+  }
+}
+
+.kb-muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.kb-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.kb-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.kb-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.kb-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.kb-delta-up {
+  color: #1b873f;
+}
+
+.kb-delta-down {
+  color: #c62828;
+}
+
+html.kb-dark .kb-delta-up {
+  color: #6fdc8c;
+}
+
+html.kb-dark .kb-delta-down {
+  color: #ff8a80;
+}
+
+.kb-status-page {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 64px 16px;
+  text-align: center;
+
+  mat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.kb-toast-error {
+  --mat-snack-bar-container-color: var(--mat-sys-error-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-error-container);
+}
+
+.kb-toast-success {
+  --mat-snack-bar-container-color: var(--mat-sys-primary-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-primary-container);
+}
+
+.kb-cite-preview {
+  max-width: 420px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  box-shadow: var(--mat-sys-level3);
+  font: var(--mat-sys-body-small);
+}
+
+.kb-uncited {
+  text-decoration: underline dotted var(--mat-sys-error);
+  text-underline-offset: 3px;
+  cursor: help;
+  position: relative;
+}
+
+.kb-uncited:hover::after,
+.kb-uncited:focus::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 4px);
+  z-index: 10;
+  width: max-content;
+  max-width: 280px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--mat-sys-inverse-surface);
+  color: var(--mat-sys-inverse-on-surface);
+  font: var(--mat-sys-body-small);
+  white-space: normal;
+}

@@ -1,0 +1,48 @@
+.head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h2 {
+    margin: 0;
+    font: var(--mat-sys-title-large);
+  }
+}
+
+.kb-spacer {
+  flex: 1;
+}
+
+.editor {
+  margin-bottom: 16px;
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.kind {
+  margin-right: 8px;
+}
+
+.meta {
+  margin-left: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.danger {
+  color: var(--mat-sys-error);
+}
+
+.error {
+  color: var(--mat-sys-error);
+}
+
+.jobs {
+  width: 100%;
+}

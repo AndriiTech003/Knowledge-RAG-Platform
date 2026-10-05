@@ -1,0 +1,100 @@
+<div class="kb-page">
+  <header class="kb-page-header">
+    <a mat-icon-button routerLink="/admin/eval" aria-label="Back to runs" i18n-aria-label="@@admin.backToRuns"><mat-icon>arrow_back</mat-icon></a>
+    <h1 i18n="@@admin.runDetail.title">Evaluation run</h1>
+    @if (run.value(); as r) {
+      <kb-status-badge [status]="r.status" />
+    }
+  </header>
+  @if (run.isLoading() && !run.value()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (run.value(); as r) {
+    <section class="kb-card head" data-testid="eval-run-detail">
+      <div><strong>{{ r.config['name'] || r.id }}</strong></div>
+      <div class="kb-muted">{{ summary(r.config) }}</div>
+      <div class="kb-muted">
+        {{ r.started_at | date: 'medium' }} → {{ r.finished_at ? (r.finished_at | date: 'mediumTime') : '…' }}
+        @if (r.git_sha) { · {{ r.git_sha }} }
+        @if (r.dataset_version) { · {{ r.dataset_version }} }
+      </div>
+      @if (r.error) {
+        <p class="error" role="alert">{{ r.error }}</p>
+      }
+    </section>
+
+    <section class="metrics" data-testid="eval-metrics">
+      @for (m of metrics(); track m.def.key) {
+        <div class="metric kb-card">
+          <span class="metric__label">{{ m.def.label }}</span>
+          <span class="metric__value">{{ fmt(m.value, m.def.kind) }}</span>
+        </div>
+      }
+    </section>
+
+    @if (byType().length) {
+      <h2 i18n="@@admin.runDetail.byType">By question type</h2>
+      <div class="kb-table-wrap">
+        <table class="types">
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@admin.runDetail.col.type">Type</th>
+              @for (c of typeColumns; track c) {
+                <th scope="col" class="kb-num">{{ columnLabel(c) }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of byType(); track row.type) {
+              <tr>
+                <td>{{ row.type }}</td>
+                @for (c of typeColumns; track c) {
+                  <td class="kb-num">{{ c === 'questions' ? (row.values[c] ?? '—') : fmt(value(row.values, c)) }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="results-head">
+      <h2 i18n="@@admin.runDetail.questions">Questions ({{ results().length }})</h2>
+      <mat-select class="type-filter" [value]="typeFilter()" (valueChange)="typeFilter.set($event)" aria-label="Question type" i18n-aria-label="@@admin.questionType">
+        <mat-option value="" i18n="@@admin.runDetail.allTypes">All types</mat-option>
+        @for (t of types(); track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+    </div>
+    <mat-accordion multi>
+      @for (result of results(); track result.question_id) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ result.question_id }} · {{ result.question }}</mat-panel-title>
+            <mat-panel-description>{{ result.question_type }}</mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="chips">
+            @for (m of scalarMetrics(result); track m.key) {
+              <span class="chip">{{ m.key }}: <strong>{{ m.value }}</strong></span>
+            }
+          </div>
+          <h3 i18n="@@admin.runDetail.retrievedDocuments">Retrieved documents</h3>
+          <ol class="docs">
+            @for (doc of retrievedDocs(result); track $index) {
+              <li>{{ doc }}</li>
+            }
+          </ol>
+          @if (result.answer) {
+            <h3 i18n="@@admin.runDetail.answer">Answer</h3>
+            <p class="pre">{{ result.answer }}</p>
+          }
+          @if (result.judge_rationale) {
+            <h3 i18n="@@admin.runDetail.judgeRationale">Judge rationale</h3>
+            <p class="pre">{{ result.judge_rationale }}</p>
+          }
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>

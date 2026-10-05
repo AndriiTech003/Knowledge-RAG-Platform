@@ -1,0 +1,77 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.viewer {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.viewer__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font: var(--mat-sys-body-small);
+}
+
+.viewer__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.viewer__page {
+  font-weight: 600;
+}
+
+.viewer__pdf {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.viewer__error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  color: var(--mat-sys-error);
+}
+
+.viewer__text {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.chunk {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--mat-sys-outline-variant);
+}
+
+.chunk__path {
+  margin-bottom: 4px;
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.chunk__text {
+  display: block;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.chunk--hit {
+  scroll-margin: 40px;
+}

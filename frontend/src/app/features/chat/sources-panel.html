@@ -1,0 +1,75 @@
+<aside class="panel" aria-labelledby="sources-heading" data-testid="sources-panel">
+  <header class="panel__header">
+    <h2 id="sources-heading" #heading tabindex="-1" i18n="@@chat.sources.title">Sources</h2>
+    <button mat-icon-button type="button" (click)="closed.emit()" aria-label="Close sources" i18n-aria-label="@@chat.sources.close" data-testid="close-sources">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+  <ul class="panel__list" aria-label="Sources used for this answer" i18n-aria-label="@@chat.sources.listLabel">
+    @for (source of sources(); track source.n) {
+      <li>
+        <button
+          type="button"
+          class="source"
+          [class.source--active]="selected()?.n === source.n"
+          [class.source--uncited]="!source.cited"
+          (click)="sourceSelected.emit(source.n)"
+          [attr.aria-pressed]="selected()?.n === source.n"
+          data-testid="source-item"
+          [attr.data-n]="source.n"
+        >
+          <span class="source__n">{{ source.n }}</span>
+          <span class="source__body">
+            <span class="source__title">{{ source.title }}</span>
+            <span class="source__meta">
+              @if (source.section) {
+                {{ source.section }} ·
+              }
+              @if (source.page) {
+                <span i18n="@@chat.sources.page">p. {{ source.page }}</span> ·
+              }
+              @if (source.score !== null) {
+                <span i18n="@@chat.sources.score">score {{ source.score | number: '1.2-2' }}</span>
+              }
+              @if (!source.cited) {
+                · <span i18n="@@chat.sources.notCited">not cited</span>
+              }
+            </span>
+          </span>
+        </button>
+      </li>
+    } @empty {
+      <li class="panel__empty" i18n="@@chat.sources.empty">No sources were retrieved for this answer.</li>
+    }
+  </ul>
+  @if (selected(); as source) {
+    <section class="panel__detail" data-testid="source-detail">
+      <div class="panel__detail-head">
+        <strong>[{{ source.n }}] {{ source.title }}</strong>
+        <a
+          mat-button
+          [routerLink]="['/documents', source.document_id]"
+          [queryParams]="{ page: source.page, chunk: source.chunk_id }"
+          data-testid="open-full-viewer"
+        >
+          <mat-icon>open_in_full</mat-icon>
+          <span i18n="@@chat.sources.open">Open</span>
+        </a>
+      </div>
+      @defer (on viewport) {
+        <kb-document-viewer
+          class="panel__viewer"
+          [documentId]="source.document_id"
+          [page]="source.page"
+          [chunkId]="source.chunk_id"
+        />
+      } @placeholder {
+        <div class="panel__viewer-placeholder"><kb-skeleton [lines]="6" /></div>
+      } @loading (minimum 150ms) {
+        <div class="panel__viewer-placeholder"><kb-skeleton [lines]="6" /></div>
+      }
+    </section>
+  } @else if (sources().length) {
+    <p class="panel__hint" i18n="@@chat.sources.hint">Select a source to open the document at the cited page.</p>
+  }
+</aside>

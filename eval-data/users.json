@@ -1,0 +1,6 @@
+{
+  "alice": {"sub": "eval-alice", "email": "alice@northwind.example", "groups": ["engineering"]},
+  "bob": {"sub": "eval-bob", "email": "bob@northwind.example", "groups": ["sales"]},
+  "carol": {"sub": "eval-carol", "email": "carol@northwind.example", "groups": ["finance"]},
+  "admin": {"sub": "eval-admin", "email": "admin@northwind.example", "groups": ["kb-admins"]}
+}

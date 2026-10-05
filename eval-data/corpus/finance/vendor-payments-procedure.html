@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vendor Onboarding and Payment Procedure (FIN-PRO-002) | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/finance/vendor-payments-procedure">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Vendor Onboarding and Payment Procedure (FIN-PRO-002)</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Procedure ID</td>
+<td>FIN-PRO-002</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td>Owner</td>
+<td>Elena Petrova, Controller</td>
+</tr>
+<tr>
+<td>Approver</td>
+<td>Daniel Reyes, CFO</td>
+</tr>
+<tr>
+<td>Audience</td>
+<td>Finance Operations team (internal)</td>
+</tr>
+<tr>
+<td>Effective date</td>
+<td>1 May 2026</td>
+</tr>
+<tr>
+<td>Parent policy</td>
+<td>Procurement Policy (POL-FIN-005)</td>
+</tr>
+</tbody>
+</table>
+<h2>1. Scope</h2>
+<p>FIN-PRO-002 is the internal Finance Operations procedure for setting up suppliers, matching invoices and paying them. It implements the company-wide Procurement Policy (POL-FIN-005), which defines who approves a purchase in Ramp Procurement. This procedure does not change those approval thresholds; it covers what happens after a purchase order exists. Employee expense claims in Expensify follow the Expense Policy (POL-FIN-001) and are out of scope.</p>
+<h2>2. Vendor onboarding</h2>
+<ol>
+<li>A new vendor is created in NetSuite by Finance Operations only after the Ramp purchase request is fully approved.</li>
+<li>Required documents: completed vendor form, W-9 (US vendors) or VAT registration certificate (EU vendors), and bank details on company letterhead.</li>
+<li>Bank details are confirmed by a <strong>call-back to a phone number obtained independently</strong> (not from the invoice or email).</li>
+<li>Any later change of vendor bank details requires call-back verification by <strong>two members of Finance Operations</strong>, and the first payment after the change is limited to $10,000 until the vendor confirms receipt.</li>
+<li>Vendors that will process customer data must have a completed Security vendor risk assessment attached in Ramp before the vendor record is activated.</li>
+</ol>
+<h2>3. Invoice processing</h2>
+<ul>
+<li>All invoices are sent to ap@northwind.example and captured in NetSuite by the AP inbox automation.</li>
+<li><strong>Three-way match:</strong> purchase order, goods receipt (confirmed by the requester in Ramp) and invoice must match within a tolerance of 2% or $500, whichever is lower.</li>
+<li>Invoices that fail the match are routed to the requester and the cost center owner, who have 5 business days to resolve the difference.</li>
+<li>Invoices without a valid PO number are returned to the vendor, as required by POL-FIN-005.</li>
+</ul>
+<h2>4. Payment terms and payment runs</h2>
+<ul>
+<li>Default supplier terms follow POL-FIN-005: net 30 days from receipt of a valid invoice.</li>
+<li>Longer terms (net 45 or net 60) are negotiated by Procurement for contracts above $100,000 where possible, and recorded on the vendor record in NetSuite.</li>
+<li>Early payment discounts (for example 2/10 net 30) are taken when the annualized return exceeds 8%, at the Controller's discretion.</li>
+<li><strong>Payment runs are executed twice a month, on the 10th and the 25th</strong> (or the previous business day). Invoices fully approved by the 7th or the 22nd are included in the next run.</li>
+<li>Urgent off-cycle payments need approval from the Controller and are limited to 4 per month.</li>
+<li>Payments are made by bank transfer in USD or EUR only. Each payment run above $250,000 in total requires release approval by the CFO in the banking portal.</li>
+</ul>
+<h2>5. Controls and reporting</h2>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Frequency</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duplicate invoice check (vendor, amount, date)</td>
+<td>Every payment run</td>
+<td>AP specialist</td>
+</tr>
+<tr>
+<td>Vendor master data change log review</td>
+<td>Monthly</td>
+<td>Controller</td>
+</tr>
+<tr>
+<td>Aged payables review</td>
+<td>Weekly</td>
+<td>Finance Operations lead</td>
+</tr>
+<tr>
+<td>Dormant vendor clean-up (no activity 18 months)</td>
+<td>Twice a year</td>
+<td>Finance Operations</td>
+</tr>
+</tbody>
+</table>
+<p>Days payable outstanding (DPO) target for 2026: 32 to 38 days.</p>
+<h2>6. Exceptions</h2>
+<p>Exceptions to FIN-PRO-002 are requested in Jira (project FINOPS) and approved by the Controller. Questions: #finance-ops on Slack.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

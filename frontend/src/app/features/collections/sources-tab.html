@@ -1,0 +1,115 @@
+<div class="head">
+  <h2 i18n="@@collections.sources.title">Sources</h2>
+  <span class="kb-spacer"></span>
+  @if (editing() === null) {
+    <button mat-flat-button type="button" (click)="editing.set('new')" data-testid="add-source">
+      <mat-icon>add</mat-icon>
+      <span i18n="@@collections.sources.add">Add source</span>
+    </button>
+  }
+</div>
+@if (editing() !== null) {
+  <section class="kb-card editor">
+    @if (editing() === 'new') {
+      <h3 i18n="@@collections.sources.newSource">New source</h3>
+    } @else {
+      <h3 i18n="@@collections.sources.editSource">Edit source</h3>
+    }
+    <kb-source-form
+      [source]="editingSource()"
+      [saving]="saving()"
+      (saved)="save($event)"
+      (cancelled)="editing.set(null)"
+    />
+  </section>
+}
+@if (sources.isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+<mat-accordion multi>
+  @for (source of sources.value() ?? []; track source.id) {
+    <mat-expansion-panel (opened)="loadHistory(source)" data-testid="source-item">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="kind">{{ source.kind === 'web' ? 'language' : 'article' }}</mat-icon>
+          {{ describe(source) }}
+        </mat-panel-title>
+        <mat-panel-description>
+          <kb-status-badge [status]="source.status ?? 'idle'" />
+          @let docCount = source.document_count ?? 0;
+          <span class="meta">
+            <span i18n="@@collections.sources.docCount">{docCount, plural, one {{{ docCount }} doc} other {{{ docCount }} docs}}</span>
+            ·
+            @if (source.schedule) {
+              <span>{{ source.schedule }}</span>
+            } @else {
+              <span i18n="@@collections.sources.manual">manual</span>
+            }
+            ·
+            @if (source.last_synced_at) {
+              <span i18n="@@collections.sources.synced">synced {{ source.last_synced_at | relativeTime }}</span>
+            } @else {
+              <span i18n="@@collections.sources.neverSynced">synced never</span>
+            }
+          </span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      @if (source.last_error) {
+        <p class="error" role="alert">{{ source.last_error }}</p>
+      }
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="sync(source)" data-testid="source-sync">
+          <mat-icon>sync</mat-icon>
+          <span i18n="@@collections.sources.syncNow">Sync now</span>
+        </button>
+        <button mat-button type="button" (click)="editing.set(source)">
+          <mat-icon>edit</mat-icon>
+          <span i18n="@@collections.sources.edit">Edit</span>
+        </button>
+        <button mat-button type="button" class="danger" (click)="remove(source)">
+          <mat-icon>delete</mat-icon>
+          <span i18n="@@common.delete">Delete</span>
+        </button>
+      </div>
+      <h4 i18n="@@collections.sources.history">Sync history</h4>
+      @if (history()[source.id]; as jobs) {
+        @if (jobs.length) {
+          <table mat-table [dataSource]="jobs" class="jobs" data-testid="sync-history">
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.status">Status</th>
+              <td mat-cell *matCellDef="let job"><kb-status-badge [status]="job.status" /></td>
+            </ng-container>
+            <ng-container matColumnDef="started">
+              <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.started">Started</th>
+              <td mat-cell *matCellDef="let job">{{ job.started_at | date: 'medium' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="finished">
+              <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.finished">Finished</th>
+              <td mat-cell *matCellDef="let job">{{ job.finished_at | date: 'medium' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="stats">
+              <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.result">Result</th>
+              <td mat-cell *matCellDef="let job">{{ statsText(job) }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="jobColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: jobColumns"></tr>
+          </table>
+        } @else {
+          <p class="kb-muted" i18n="@@collections.sources.noSyncs">No syncs yet.</p>
+        }
+      } @else {
+        <mat-progress-bar mode="indeterminate" />
+      }
+    </mat-expansion-panel>
+  } @empty {
+    @if (!sources.isLoading()) {
+      <kb-empty-state
+        icon="cloud_sync"
+        title="No sources"
+        i18n-title="@@collections.sources.emptyTitle"
+        message="Connect a website or Notion workspace to keep this collection in sync."
+        i18n-message="@@collections.sources.emptyMessage"
+      />
+    }
+  }
+</mat-accordion>

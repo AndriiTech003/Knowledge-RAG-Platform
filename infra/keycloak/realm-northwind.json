@@ -1,0 +1,208 @@
+{
+  "realm": "northwind",
+  "enabled": true,
+  "displayName": "Northwind Labs",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 3600,
+  "ssoSessionMaxLifespan": 36000,
+  "bruteForceProtected": false,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "en",
+    "uk"
+  ],
+  "defaultLocale": "en",
+  "groups": [
+    {
+      "name": "engineering",
+      "path": "/engineering"
+    },
+    {
+      "name": "sales",
+      "path": "/sales"
+    },
+    {
+      "name": "finance",
+      "path": "/finance"
+    },
+    {
+      "name": "hr",
+      "path": "/hr"
+    },
+    {
+      "name": "kb-admins",
+      "path": "/kb-admins"
+    }
+  ],
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Anders",
+      "email": "alice@northwind.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "/engineering"
+      ],
+      "requiredActions": []
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "Brown",
+      "email": "bob@northwind.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "/sales"
+      ],
+      "requiredActions": []
+    },
+    {
+      "username": "carol",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Carol",
+      "lastName": "Chen",
+      "email": "carol@northwind.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "/finance"
+      ],
+      "requiredActions": []
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Ada",
+      "lastName": "Admin",
+      "email": "admin@northwind.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "/kb-admins"
+      ],
+      "requiredActions": []
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "kb-web",
+      "name": "Knowledge Base web app",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://127.0.0.1:4420/*",
+        "http://127.0.0.1:4421/*",
+        "http://127.0.0.1:4450/*",
+        "http://127.0.0.1:4451/*",
+        "http://127.0.0.1:4460/*",
+        "http://127.0.0.1:4461/*",
+        "http://localhost:4420/*",
+        "http://localhost:4421/*",
+        "http://localhost:4450/*",
+        "http://localhost:4451/*",
+        "http://localhost:4460/*",
+        "http://localhost:4461/*",
+        "http://127.0.0.1:4444/*",
+        "http://localhost:4444/*"
+      ],
+      "webOrigins": [
+        "http://127.0.0.1:4420",
+        "http://127.0.0.1:4421",
+        "http://127.0.0.1:4450",
+        "http://127.0.0.1:4451",
+        "http://127.0.0.1:4460",
+        "http://127.0.0.1:4461",
+        "http://localhost:4420",
+        "http://localhost:4421",
+        "http://localhost:4450",
+        "http://localhost:4451",
+        "http://localhost:4460",
+        "http://localhost:4461",
+        "http://127.0.0.1:4444",
+        "http://localhost:4444"
+      ],
+      "rootUrl": "http://127.0.0.1:4420",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+",
+        "access.token.lifespan": "900"
+      },
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "profile",
+        "roles",
+        "email",
+        "basic"
+      ],
+      "optionalClientScopes": [
+        "offline_access"
+      ],
+      "protocolMappers": [
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "groups",
+            "full.path": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "kb-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "kb-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

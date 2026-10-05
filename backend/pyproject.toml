@@ -1,0 +1,122 @@
+[project]
+name = "kb"
+version = "0.1.0"
+description = "Permission-aware knowledge RAG platform"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.5",
+  "sqlalchemy[asyncio]>=2.0.35",
+  "asyncpg>=0.30",
+  "psycopg[binary]>=3.2",
+  "alembic>=1.13",
+  "pgvector>=0.3",
+  "celery[redis]>=5.4",
+  "redis>=5.2",
+  "minio>=7.2",
+  "pyjwt[crypto]>=2.9",
+  "httpx>=0.27",
+  "pymupdf>=1.24",
+  "python-docx>=1.1",
+  "markdown-it-py>=3.0",
+  "trafilatura>=1.12",
+  "python-magic>=0.4.27",
+  "tokenizers>=0.20",
+  "huggingface-hub>=0.26",
+  "anthropic>=0.40",
+  "openai>=1.50",
+  "prometheus-client>=0.21",
+  "opentelemetry-api>=1.27",
+  "opentelemetry-sdk>=1.27",
+  "opentelemetry-exporter-otlp-proto-http>=1.27",
+  "opentelemetry-instrumentation-fastapi>=0.48b0",
+  "opentelemetry-instrumentation-sqlalchemy>=0.48b0",
+  "opentelemetry-instrumentation-celery>=0.48b0",
+  "sse-starlette>=2.1",
+  "mcp>=1.2",
+  "numpy>=2.0",
+  "croniter>=3.0",
+  "defusedxml>=0.7",
+]
+
+[dependency-groups]
+models = [
+  "sentence-transformers>=3.2",
+]
+dev = [
+  "ruff>=0.7",
+  "mypy>=1.13",
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-timeout>=2.3",
+  "hypothesis>=6.115",
+  "respx>=0.21",
+  "celery-types>=0.22",
+  "types-croniter>=3.0",
+  "types-defusedxml>=0.7",
+  "testcontainers[postgres,redis,minio]>=4.8",
+  "reportlab>=4.2",
+]
+load = [
+  "locust>=2.32",
+]
+
+[project.scripts]
+kb-api = "kb.cli:api"
+kb-seed = "kb.seed:main"
+kb-eval = "kb.evaluation.cli:main"
+kb-mcp = "kb.mcp.server:main"
+kb-models = "kb_models.app:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kb", "src/kb_models"]
+
+[tool.uv]
+default-groups = ["dev", "models", "load"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "ASYNC", "S", "PT", "RET", "ARG", "PL"]
+ignore = ["S105", "S106", "PLR0913", "PLR0917", "N815", "E501", "ARG002", "ASYNC240", "ASYNC109", "N813", "N814", "S607", "SIM105", "PLR2004", "PLR0911", "PLR0912", "PLR0915", "S101", "S311", "B008", "RUF001", "RUF002", "RUF003", "S608", "PLC0415"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/kb/mcp/server.py" = ["A002"]
+"tests/**" = ["S105", "S106", "ARG001", "ARG002", "ARG005", "PLR0913", "S603", "S607", "PT018", "PT022", "S110", "ASYNC110", "RUF007", "S108", "PLR0915", "SIM117"]
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+mypy_path = "src"
+packages = ["kb", "kb_models", "tests", "scripts"]
+plugins = ["pydantic.mypy"]
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["fitz.*", "pymupdf.*", "docx.*", "trafilatura.*", "magic.*", "pgvector.*", "minio.*", "sentence_transformers.*", "opentelemetry.instrumentation.*", "locust.*", "reportlab.*", "testcontainers.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+markers = [
+  "integration: needs local postgres/redis/minio",
+  "chaos: kills worker processes",
+  "eval: runs evaluation harness",
+]
+timeout = 300
+
+[[tool.mypy.overrides]]
+module = ["kb.ingestion.parsers.pdf", "kb.evaluation.corpus_builder", "kb.core.telemetry", "tests.fixtures.*", "locustfile"]
+disallow_untyped_calls = false

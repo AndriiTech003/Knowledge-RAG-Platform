@@ -1,0 +1,101 @@
+<div class="kb-page">
+  <header class="kb-page-header">
+    <h1 i18n="@@search.page.title">Search</h1>
+  </header>
+  <form class="controls" [formGroup]="form" (submit)="$event.preventDefault()">
+    <mat-form-field appearance="outline" class="controls__query" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label i18n="@@search.page.queryLabel">Search documents</mat-label>
+      <input matInput formControlName="query" autocomplete="off" data-testid="search-input" />
+    </mat-form-field>
+    <mat-button-toggle-group formControlName="mode" aria-label="Retrieval mode" i18n-aria-label="@@search.page.modeLabel" data-testid="search-mode">
+      <mat-button-toggle value="vector" i18n="@@search.page.modeVector">Vector</mat-button-toggle>
+      <mat-button-toggle value="lexical" i18n="@@search.page.modeLexical">Lexical</mat-button-toggle>
+      <mat-button-toggle value="hybrid" i18n="@@search.page.modeHybrid">Hybrid</mat-button-toggle>
+    </mat-button-toggle-group>
+    <mat-slide-toggle formControlName="rerank" data-testid="search-rerank" i18n="@@search.page.reranker">Reranker</mat-slide-toggle>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="controls__collections">
+      <mat-label i18n="@@search.page.collections">Collections</mat-label>
+      <mat-select formControlName="collections" multiple>
+        @for (c of user.collections(); track c.id) {
+          <mat-option [value]="c.id">{{ c.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="controls__k">
+      <mat-label i18n="@@search.page.topK">Top k</mat-label>
+      <mat-select formControlName="k">
+        @for (k of [5, 10, 20]; track k) {
+          <mat-option [value]="k">{{ k }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  @if (state().status === 'loading') {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (state().response; as response) {
+    <div class="summary kb-muted" data-testid="search-summary">
+      {{ summary() }}
+      @for (t of timings(); track t[0]) {
+        <span class="timing">{{ t[0] }} {{ t[1] | number: '1.0-0' }} ms</span>
+      }
+    </div>
+  }
+
+  @switch (state().status) {
+    @case ('idle') {
+      <kb-empty-state
+        icon="manage_search"
+        title="Compare retrieval modes"
+        i18n-title="@@search.empty.title"
+        message="Type at least two characters. Switch between vector, lexical and hybrid retrieval and toggle the reranker to see how ranking changes."
+        i18n-message="@@search.empty.message"
+      />
+    }
+    @case ('error') {
+      <kb-empty-state icon="error" title="Search failed" i18n-title="@@search.error.title" [message]="state().error?.userMessage ?? null" />
+    }
+    @default {
+      <ol class="results" data-testid="search-results">
+        @for (hit of results(); track hit.chunk_id) {
+          <li class="hit kb-card" data-testid="search-result">
+            <div class="hit__head">
+              <span class="hit__rank">#{{ hit.rank }}</span>
+              <a class="hit__title" [routerLink]="['/documents', hit.document_id]" [queryParams]="{ page: hit.page, chunk: hit.chunk_id }">{{ hit.title }}</a>
+              @if (hit.page) {
+                @if (hit.page_end && hit.page_end !== hit.page) {
+                  <span class="kb-muted" i18n="@@search.result.pageRange">p. {{ hit.page }}–{{ hit.page_end }}</span>
+                } @else {
+                  <span class="kb-muted" i18n="@@search.result.page">p. {{ hit.page }}</span>
+                }
+              }
+            </div>
+            @if (hit.heading_path.length) {
+              <div class="hit__path">{{ hit.heading_path.join(' › ') }}</div>
+            }
+            <p class="hit__snippet" [innerHTML]="hit.snippet"></p>
+            <div class="scores" [matTooltip]="scoreTip(hit)" data-testid="search-scores">
+              <span class="score"><span i18n="@@search.mode.vector">vector</span>{{ hit.scores.vector_rank ?? '—' }}<small>{{ hit.scores.vector_score === null ? '' : (hit.scores.vector_score | number: '1.3-3') }}</small></span>
+              <span class="score"><span i18n="@@search.mode.lexical">lexical</span>{{ hit.scores.lexical_rank ?? '—' }}<small>{{ hit.scores.lexical_score === null ? '' : (hit.scores.lexical_score | number: '1.3-3') }}</small></span>
+              <span class="score"><span>RRF</span>{{ hit.scores.rrf | number: '1.4-4' }}</span>
+              <span class="score"><span i18n="@@search.score.rerank">rerank</span>{{ hit.scores.rerank === null ? '—' : (hit.scores.rerank | number: '1.3-3') }}</span>
+            </div>
+          </li>
+        } @empty {
+          @if (state().status === 'done') {
+            <kb-empty-state
+              icon="search_off"
+              title="No results"
+              i18n-title="@@search.noResults.title"
+              message="Nothing in your collections matches this query."
+              i18n-message="@@search.noResults.message"
+            />
+          }
+        }
+      </ol>
+    }
+  }
+</div>

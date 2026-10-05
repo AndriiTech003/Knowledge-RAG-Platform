@@ -1,0 +1,5 @@
+Visitor Wi-Fi
+
+The visitor network is NW-Visit.
+
+Passwords rotate weekly.

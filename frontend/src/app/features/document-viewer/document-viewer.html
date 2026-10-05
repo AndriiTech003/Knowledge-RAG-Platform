@@ -1,0 +1,83 @@
+<div class="viewer" [style.height]="height()" data-testid="document-viewer">
+  @if (download.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (download.error()) {
+    <div class="viewer__error" role="alert">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      <span i18n="@@viewer.loadError">Could not load the document.</span>
+      <button mat-button type="button" (click)="download.reload()" i18n="@@common.retry">Retry</button>
+    </div>
+  }
+  @if (pdfSrc(); as src) {
+    <div class="viewer__bar">
+      <span class="viewer__name">{{ download.value()?.filename }}</span>
+      <span class="viewer__page" data-testid="viewer-page" [attr.data-page]="currentPage()">
+        @if (pageCount()) {
+          <ng-container i18n="@@viewer.pageOf">Page {{ currentPage() }} of {{ pageCount() }}</ng-container>
+        } @else {
+          <ng-container i18n="@@viewer.page">Page {{ currentPage() }}</ng-container>
+        }
+      </span>
+      @if (phrase()) {
+        <button mat-button type="button" (click)="runFind()" data-testid="viewer-highlight">
+          <mat-icon>highlight</mat-icon>
+          <span i18n="@@viewer.highlight">Highlight fragment</span>
+        </button>
+      }
+    </div>
+    <div class="viewer__pdf">
+      <ngx-extended-pdf-viewer
+        [src]="src"
+        [page]="targetPage()"
+        (pageChange)="onPageChange($event)"
+        (pagesLoaded)="onPagesLoaded($event)"
+        [textLayer]="true"
+        [showOpenFileButton]="false"
+        [showPrintButton]="false"
+        [showSecondaryToolbarButton]="false"
+        [showPresentationModeButton]="false"
+        [showSidebarButton]="false"
+        [showDrawEditor]="false"
+        [showTextEditor]="false"
+        [showStampEditor]="false"
+        [showHighlightEditor]="false"
+        [showSignatureEditor]="false"
+        [showCommentEditor]="false"
+        [showRotateButton]="false"
+        [showHandToolButton]="false"
+        [showSpreadButton]="false"
+        [showPropertiesButton]="false"
+        [showMovePageButton]="false"
+        zoom="page-width"
+        height="100%"
+        [filenameForDownload]="download.value()?.filename ?? 'document.pdf'"
+      />
+    </div>
+  } @else if (download.value()) {
+    <div class="viewer__bar">
+      <span class="viewer__name">{{ download.value()?.filename }}</span>
+      <a mat-button [href]="download.value()?.url" target="_blank" rel="noopener">
+        <mat-icon>download</mat-icon>
+        <span i18n="@@viewer.original">Original</span>
+      </a>
+    </div>
+    <div class="viewer__text" data-testid="text-viewer">
+      @if (chunks.isLoading()) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+      @for (item of chunks.value()?.items ?? []; track item.id) {
+        <section class="chunk" [class.chunk--hit]="item.id === chunkId()" [attr.data-chunk-id]="item.id">
+          @if (item.heading_path.length) {
+            <div class="chunk__path">{{ item.heading_path.join(' › ') }}</div>
+          }
+          @if (item.id === chunkId()) {
+            <mark class="chunk__text" data-testid="highlighted-fragment">{{ item.text }}</mark>
+          } @else {
+            <div class="chunk__text">{{ item.text }}</div>
+          }
+        </section>
+      }
+    </div>
+  }
+</div>

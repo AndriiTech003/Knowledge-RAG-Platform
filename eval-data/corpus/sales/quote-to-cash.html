@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quote-to-Cash Process in Salesforce | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/sales/quote-to-cash">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Quote-to-Cash Process in Salesforce</h1>
+<p><strong>Owner:</strong> Revenue Operations (Deal Desk)
+<strong>Executive sponsor:</strong> Tom Lindqvist, VP Sales
+<strong>Systems:</strong> Salesforce Sales Cloud, Salesforce CPQ, DocuSign, NetSuite (billing)</p>
+<p>This page describes every step from building a quote to handing a signed order to billing. Follow it for all new business, expansion and renewal deals for Atlas and Beacon.</p>
+<h2>Step 1 – Build the quote in Salesforce CPQ</h2>
+<ol>
+<li>From the opportunity (Stage 4 – Business Case or later), click <strong>New Quote</strong>.</li>
+<li>Select the price book: <em>Atlas 2026 USD</em> or <em>Atlas 2026 EUR</em>. The currency follows the account billing country.</li>
+<li>Add products by SKU, for example <code>ATL-ENT-ANNUAL</code> (Atlas Enterprise, annual), <code>ATL-GRW-ANNUAL</code> (Atlas Growth, annual) or <code>BCN-ADDON-ANNUAL</code> (Beacon add-on, annual).</li>
+<li>Enter quantity, term (12, 24 or 36 months) and start date.</li>
+</ol>
+<h2>Step 2 – Approvals</h2>
+<ul>
+<li>Discounts trigger the CPQ approval workflow according to the Discount Approval Matrix.</li>
+<li>Non-standard legal terms are flagged with the <strong>Legal Review</strong> checkbox and routed to Legal.</li>
+<li>Quotes cannot be generated as PDF while an approval is pending.</li>
+</ul>
+<h2>Step 3 – Generate and send the order form</h2>
+<ol>
+<li>Generate the order form PDF from CPQ using the template for the region (NA or EMEA). German-language templates are available for DACH accounts.</li>
+<li>Send via DocuSign directly from Salesforce. Do not send order forms as email attachments.</li>
+<li>Quotes are valid for 30 days from generation.</li>
+</ol>
+<h2>Step 4 – Countersignature and Closed Won</h2>
+<ol>
+<li>When the customer signs, DocuSign routes the order form to the Deal Desk for countersignature by an authorized signatory.</li>
+<li>Deal Desk checks: signed version matches the approved quote, billing contact present, PO number captured if the customer requires one.</li>
+<li>Only Deal Desk can move the opportunity to <strong>Closed Won</strong>. AEs cannot set this stage themselves.</li>
+</ol>
+<h2>Step 5 – Handoff to billing</h2>
+<ul>
+<li>Closed Won opportunities sync to NetSuite overnight (02:00 Lisbon time) through the Salesforce–NetSuite connector.</li>
+<li>Finance Operations issues the first invoice within 3 business days of Closed Won.</li>
+<li>Standard customer payment terms are net 30; anything longer requires Deal Desk approval.</li>
+</ul>
+<h2>Step 6 – Provisioning</h2>
+<ul>
+<li>The Atlas tenant is provisioned automatically when the subscription becomes active in NetSuite.</li>
+<li>Beacon add-on activation is triggered by the <code>BCN-ADDON-ANNUAL</code> line.</li>
+</ul>
+<h2>Common errors</h2>
+<table>
+<thead>
+<tr>
+<th>Error message in CPQ</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Price book mismatch&quot;</td>
+<td>Quote currency differs from account billing country</td>
+<td>Change the price book or correct the account billing country</td>
+</tr>
+<tr>
+<td>&quot;Approval required&quot;</td>
+<td>Discount above the AE's limit</td>
+<td>Submit for approval; wait for CPQ approval</td>
+</tr>
+<tr>
+<td>&quot;Missing billing contact&quot;</td>
+<td>No contact with role Billing on the opportunity</td>
+<td>Add a billing contact before generating the order form</td>
+</tr>
+</tbody>
+</table>
+<p>Questions: #deal-desk on Slack.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

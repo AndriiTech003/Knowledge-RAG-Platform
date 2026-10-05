@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas Error Code Catalogue | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/engineering/error-code-catalogue">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Atlas Error Code Catalogue</h1>
+<p>This catalogue lists the error codes returned by the Atlas public API, the Ingest Gateway and the Atlas Collector. Every error code has the form <code>NW-E</code> followed by four digits. The first digit indicates the category. Support engineers and on-call engineers should link to this page when answering customer tickets.</p>
+<p>Last updated: 30 June 2026 · Owner: API Platform team</p>
+<h2>Categories</h2>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NW-E1xxx</td>
+<td>Authentication and authorisation</td>
+</tr>
+<tr>
+<td>NW-E2xxx</td>
+<td>Resource and workspace errors</td>
+</tr>
+<tr>
+<td>NW-E3xxx</td>
+<td>Validation and schema errors</td>
+</tr>
+<tr>
+<td>NW-E4xxx</td>
+<td>Ingestion limits and throttling</td>
+</tr>
+<tr>
+<td>NW-E5xxx</td>
+<td>Server-side and upstream errors</td>
+</tr>
+</tbody>
+</table>
+<h2>Error codes</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>HTTP status</th>
+<th>Meaning</th>
+<th>Typical fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NW-E1001</td>
+<td>401</td>
+<td>API key is missing or invalid</td>
+<td>Check the <code>Authorization: Bearer</code> header; regenerate the key in Settings</td>
+</tr>
+<tr>
+<td>NW-E1003</td>
+<td>401</td>
+<td>Access token expired</td>
+<td>Refresh the OAuth token; tokens are valid for 60 minutes</td>
+</tr>
+<tr>
+<td>NW-E1010</td>
+<td>403</td>
+<td>SSO enforcement: password login is disabled for this workspace</td>
+<td>Log in through the workspace's identity provider</td>
+</tr>
+<tr>
+<td>NW-E2004</td>
+<td>404</td>
+<td>Workspace not found or not accessible with this key</td>
+<td>Verify the workspace ID in the URL</td>
+</tr>
+<tr>
+<td>NW-E2011</td>
+<td>409</td>
+<td>Monitor with the same name already exists</td>
+<td>Use a unique monitor name</td>
+</tr>
+<tr>
+<td>NW-E3007</td>
+<td>422</td>
+<td>Event does not match the registered schema</td>
+<td>Register the new schema version or fix the producer</td>
+</tr>
+<tr>
+<td>NW-E3015</td>
+<td>422</td>
+<td>Timestamp more than 7 days in the past or 1 hour in the future</td>
+<td>Fix the client clock or use the backfill API</td>
+</tr>
+<tr>
+<td>NW-E4012</td>
+<td>413</td>
+<td>Event batch too large: request payload exceeds the 5 MB maximum</td>
+<td>Split the request into batches of at most 1,000 events and under 5 MB</td>
+</tr>
+<tr>
+<td>NW-E4020</td>
+<td>429</td>
+<td>Monthly event quota for the workspace exhausted</td>
+<td>Contact the account owner to upgrade the plan</td>
+</tr>
+<tr>
+<td>NW-E4290</td>
+<td>429</td>
+<td>API rate limit exceeded (token bucket empty, see RFC-0057)</td>
+<td>Back off and retry after the <code>Retry-After</code> header</td>
+</tr>
+<tr>
+<td>NW-E5003</td>
+<td>504</td>
+<td>Query timed out after 30 seconds in ClickHouse</td>
+<td>Narrow the time range or add filters</td>
+</tr>
+<tr>
+<td>NW-E5031</td>
+<td>503</td>
+<td>Upstream connector unavailable (warehouse or BI tool did not respond)</td>
+<td>Retry later; check the integration status page</td>
+</tr>
+<tr>
+<td>NW-E5099</td>
+<td>500</td>
+<td>Unexpected internal error</td>
+<td>Open a ticket with the <code>request_id</code> from the response</td>
+</tr>
+</tbody>
+</table>
+<h2>Notes for on-call engineers</h2>
+<ul>
+<li>A spike of NW-E3007 after a customer deploy usually means the customer changed their event schema without registering it. Events with NW-E3007 are written to the dead-letter topic <code>atlas.events.dlq</code> (see RFC-0042).</li>
+<li>NW-E4012 errors are rejected at the Ingest Gateway and are never written to Kafka.</li>
+<li>A sudden increase of NW-E5003 for many workspaces at once points to ClickHouse capacity problems; check the Grafana dashboard &quot;ClickHouse / Query latency&quot; and consider declaring a SEV2.</li>
+<li>NW-E5099 should be rare. More than 100 occurrences in 10 minutes triggers an alert to the API Platform on-call.</li>
+</ul>
+<h2>Deprecated codes</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Replaced by</th>
+<th>Removed in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NW-E4001</td>
+<td>NW-E4012</td>
+<td>Atlas 4.0</td>
+</tr>
+<tr>
+<td>NW-E4299</td>
+<td>NW-E4290</td>
+<td>Atlas 4.3</td>
+</tr>
+</tbody>
+</table>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{ "apiUrl": "${API_URL}", "authority": "${OIDC_AUTHORITY}", "clientId": "${OIDC_CLIENT_ID}" }

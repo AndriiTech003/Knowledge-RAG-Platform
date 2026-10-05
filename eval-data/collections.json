@@ -1,0 +1,16 @@
+[
+  {"slug": "handbook", "name": "Company Handbook", "description": "Onboarding, benefits overview, offices, tools and everyday how-tos for every employee.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "engineering", "role": "viewer"}, {"principal_type": "group", "principal_id": "sales", "role": "viewer"}, {"principal_type": "group", "principal_id": "finance", "role": "viewer"}, {"principal_type": "group", "principal_id": "hr", "role": "viewer"}]},
+  {"slug": "policies", "name": "Company Policies", "description": "Travel, expenses, security, remote work and other company-wide policies.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "engineering", "role": "viewer"}, {"principal_type": "group", "principal_id": "sales", "role": "viewer"}, {"principal_type": "group", "principal_id": "finance", "role": "viewer"}, {"principal_type": "group", "principal_id": "hr", "role": "viewer"}]},
+  {"slug": "engineering", "name": "Engineering RFCs & Runbooks", "description": "Architecture RFCs, runbooks, on-call and incident process.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "engineering", "role": "editor"}]},
+  {"slug": "product", "name": "Product Specs", "description": "Product specifications, pricing tiers and release notes for Atlas and Beacon.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "engineering", "role": "viewer"}, {"principal_type": "group", "principal_id": "sales", "role": "viewer"}]},
+  {"slug": "sales", "name": "Sales Playbooks", "description": "Sales process, discount approvals, objection handling and territory plans.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "sales", "role": "editor"}]},
+  {"slug": "finance", "name": "Finance Reports", "description": "Budgets, quarterly results, forecasts and finance procedures. Restricted.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "finance", "role": "editor"}]},
+  {"slug": "hr", "name": "HR Confidential", "description": "Compensation bands, performance process and other HR-only documents. Restricted.", "chunking_profile": "default",
+   "grants": [{"principal_type": "group", "principal_id": "hr", "role": "editor"}]}
+]

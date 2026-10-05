@@ -1,0 +1,99 @@
+@if (context.canEdit()) {
+  <kb-file-drop-zone (files)="onFiles($event)" />
+  @if (store.hasUploads()) {
+    <kb-upload-list
+      [items]="store.uploads()"
+      (cancelled)="store.cancelUpload($event)"
+      (retry)="store.retryUpload($event)"
+      (dismiss)="store.dismissUpload($event)"
+    />
+  }
+}
+<div class="toolbar">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__search">
+    <mat-icon matPrefix>filter_list</mat-icon>
+    <mat-label i18n="@@collections.documents.filter">Filter documents</mat-label>
+    <input matInput [value]="store.query()" (input)="onQuery($event)" data-testid="documents-filter" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__status">
+    <mat-label i18n="@@collections.documents.status">Status</mat-label>
+    <mat-select [value]="store.statusFilter()" (valueChange)="store.setStatusFilter($event)" data-testid="documents-status-filter">
+      <mat-option value="" i18n="@@collections.documents.allStatuses">All</mat-option>
+      @for (status of statuses; track status) {
+        <mat-option [value]="status">{{ statusLabel(status) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <span class="kb-spacer"></span>
+  <span class="live" [class.live--on]="store.live()" data-testid="live-indicator">
+    <span class="live__dot" aria-hidden="true"></span>
+    @if (store.live()) {
+      <span i18n="@@collections.documents.live">Live updates</span>
+    } @else {
+      <span i18n="@@collections.documents.connecting">Connecting…</span>
+    }
+  </span>
+</div>
+@if (store.loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+<div class="kb-table-wrap">
+  <table mat-table [dataSource]="dataSource" matSort matSortActive="updated_at" matSortDirection="desc" data-testid="documents-table">
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@collections.documents.colTitle">Title</th>
+      <td mat-cell *matCellDef="let doc">
+        <a [routerLink]="[doc.id]" class="title" data-testid="document-link">{{ doc.title }}</a>
+        @if (store.stats()[doc.id]; as stats) {
+          <div class="stats kb-muted" data-testid="document-stats">{{ describeStats(stats) }}</div>
+        }
+        @if (doc.error) {
+          <div class="error">{{ doc.error }}</div>
+        }
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@collections.documents.status">Status</th>
+      <td mat-cell *matCellDef="let doc"><kb-status-badge [status]="doc.status" /></td>
+    </ng-container>
+    <ng-container matColumnDef="mime_type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@collections.documents.colType">Type</th>
+      <td mat-cell *matCellDef="let doc">{{ mimeLabel(doc.mime_type) }}</td>
+    </ng-container>
+    <ng-container matColumnDef="page_count">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@collections.documents.colPages">Pages</th>
+      <td mat-cell *matCellDef="let doc" class="kb-num">{{ doc.page_count ?? '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="updated_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@collections.documents.colUpdated">Updated</th>
+      <td mat-cell *matCellDef="let doc">{{ doc.updated_at | relativeTime }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef><span class="kb-visually-hidden" i18n="@@collections.documents.colActions">Actions</span></th>
+      <td mat-cell *matCellDef="let doc" class="actions">
+        <a mat-icon-button [routerLink]="['/documents', doc.id]" matTooltip="View" i18n-matTooltip="@@collections.documents.view" aria-label="View document" i18n-aria-label="@@collections.documents.viewDocument">
+          <mat-icon>visibility</mat-icon>
+        </a>
+        @if (context.canEdit()) {
+          <button mat-icon-button type="button" [matMenuTriggerFor]="menu" aria-label="Document actions" i18n-aria-label="@@collections.documents.actions" data-testid="document-actions">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button" (click)="reindex(doc)" data-testid="document-reindex">
+              <mat-icon>autorenew</mat-icon>
+              <span i18n="@@collections.documents.reindex">Re-index</span>
+            </button>
+            <button mat-menu-item type="button" (click)="remove(doc)" data-testid="document-delete">
+              <mat-icon>delete</mat-icon>
+              <span i18n="@@common.delete">Delete</span>
+            </button>
+          </mat-menu>
+        }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let doc; columns: columns" data-testid="document-row" [attr.data-document-id]="doc.id" [attr.data-title]="doc.title" [attr.data-status]="doc.status"></tr>
+  </table>
+  @if (!store.loading() && store.filtered().length === 0) {
+    <kb-empty-state icon="description" title="No documents" i18n-title="@@collections.documents.emptyTitle" [message]="emptyMessage()" />
+  }
+</div>

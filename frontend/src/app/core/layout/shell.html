@@ -1,0 +1,119 @@
+<mat-sidenav-container class="shell" autosize>
+  <mat-sidenav
+    class="shell__nav"
+    [mode]="sidenavMode()"
+    [opened]="opened()"
+    (closedStart)="mobileOpen.set(false)"
+    data-testid="sidenav"
+  >
+    <div class="shell__brand">
+      <mat-icon class="shell__logo">auto_stories</mat-icon>
+      <span i18n="@@shell.brand">Northwind KB</span>
+    </div>
+    <mat-nav-list aria-label="Main navigation" i18n-aria-label="@@shell.nav.mainLabel">
+      @for (item of mainNav; track item.path) {
+        <a
+          mat-list-item
+          [routerLink]="item.path"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [activated]="rla.isActive"
+          [attr.data-testid]="item.testId"
+          (click)="closeOnHandset()"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+    @if (user.isAdmin()) {
+      <mat-divider />
+      <div class="shell__section" id="admin-nav-label" i18n="@@shell.nav.admin">Admin</div>
+      <mat-nav-list aria-labelledby="admin-nav-label" data-testid="admin-nav">
+        @for (item of adminNav; track item.path) {
+          <a
+            mat-list-item
+            [routerLink]="item.path"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [activated]="rla.isActive"
+            [attr.data-testid]="item.testId"
+            (click)="closeOnHandset()"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    }
+  </mat-sidenav>
+  <mat-sidenav-content class="shell__content">
+    <mat-toolbar class="shell__topbar">
+      <button mat-icon-button type="button" (click)="toggleNav()" aria-label="Toggle navigation" i18n-aria-label="@@shell.nav.toggle" data-testid="nav-toggle">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="shell__title" i18n="@@shell.title">Knowledge Base</span>
+      <span class="shell__spacer"></span>
+      <span class="shell__hint" aria-hidden="true" i18n="@@shell.shortcuts"><kbd>⌘K</kbd> new chat · <kbd>/</kbd> focus</span>
+      <button
+        mat-icon-button
+        type="button"
+        [matMenuTriggerFor]="languageMenu"
+        matTooltip="Language"
+        i18n-matTooltip="@@shell.language.label"
+        aria-label="Language"
+        i18n-aria-label="@@shell.language.label"
+        data-testid="language-menu"
+      >
+        <mat-icon>translate</mat-icon>
+      </button>
+      <mat-menu #languageMenu="matMenu">
+        @for (option of language.options; track option.code) {
+          <button
+            mat-menu-item
+            type="button"
+            [attr.lang]="option.code"
+            [attr.aria-current]="option.code === language.current() ? 'true' : null"
+            [attr.data-testid]="'language-' + option.code"
+            (click)="language.switchTo(option.code)"
+          >
+            <mat-icon>{{ option.code === language.current() ? 'check' : '' }}</mat-icon>
+            <span>{{ option.name }}</span>
+          </button>
+        }
+      </mat-menu>
+      <button
+        mat-icon-button
+        type="button"
+        (click)="theme.toggle()"
+        [matTooltip]="themeLabel()"
+        [attr.aria-label]="themeLabel()"
+        data-testid="theme-toggle"
+      >
+        <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="shell__user" data-testid="user-menu">
+        <span class="shell__avatar" aria-hidden="true">{{ user.initials() || '?' }}</span>
+        <span class="shell__username" data-testid="current-user">{{ user.displayName() }}</span>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <div class="shell__menu-info" role="presentation">
+          <div class="shell__menu-name">{{ user.displayName() }}</div>
+          @if (user.groups().length) {
+            <div class="shell__menu-groups">{{ user.groups().join(', ') }}</div>
+          } @else {
+            <div class="shell__menu-groups" i18n="@@shell.user.noGroups">no groups</div>
+          }
+        </div>
+        <mat-divider />
+        <button mat-menu-item type="button" (click)="logout()" data-testid="logout">
+          <mat-icon>logout</mat-icon>
+          <span i18n="@@shell.user.signOut">Sign out</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+    <main class="shell__main" [class.shell__main--admin]="inAdmin()">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,9 @@
+**/node_modules
+**/.venv
+**/dist
+**/__pycache__
+.run
+.tools
+backend/reports
+frontend/playwright-report
+frontend/test-results

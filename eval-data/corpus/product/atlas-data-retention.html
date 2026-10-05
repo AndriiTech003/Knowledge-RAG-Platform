@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas Data Retention Limits by Tier | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/product/atlas-data-retention">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>Atlas Data Retention Limits by Tier</h1>
+<p>This page defines how long Atlas keeps customer data in each pricing tier. It reflects the changes released in Atlas 5.1 (15 September 2026). Engineering enforces these limits automatically through storage TTLs; Sales and Customer Success should use this page when answering customer questions about retention.</p>
+<h2>Retention per data type and tier</h2>
+<table>
+<thead>
+<tr>
+<th>Data type</th>
+<th>Starter</th>
+<th>Growth</th>
+<th>Enterprise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw events (query logs, pipeline run events)</td>
+<td>30 days</td>
+<td>90 days</td>
+<td>400 days</td>
+</tr>
+<tr>
+<td>Aggregated metrics (freshness, volume, row counts)</td>
+<td>6 months</td>
+<td>13 months</td>
+<td>25 months</td>
+</tr>
+<tr>
+<td>Incidents and incident timelines</td>
+<td>12 months</td>
+<td>24 months</td>
+<td>36 months</td>
+</tr>
+<tr>
+<td>Audit log</td>
+<td>90 days</td>
+<td>1 year</td>
+<td>7 years</td>
+</tr>
+<tr>
+<td>Query history snapshots</td>
+<td>14 days</td>
+<td>30 days</td>
+<td>90 days</td>
+</tr>
+<tr>
+<td>Anomaly model training windows</td>
+<td>60 days</td>
+<td>180 days</td>
+<td>400 days</td>
+</tr>
+</tbody>
+</table>
+<p>Retention is measured from the time the data is received by Atlas, not from the event timestamp.</p>
+<h2>Extended retention</h2>
+<ul>
+<li>Enterprise customers can purchase extended raw event retention of up to 3 years as part of a custom contract.</li>
+<li>Growth and Starter customers who need longer retention must upgrade their tier.</li>
+</ul>
+<h2>Changing tiers</h2>
+<ul>
+<li><strong>Upgrade:</strong> the longer retention applies from the upgrade date. Data that was already deleted cannot be restored.</li>
+<li><strong>Downgrade:</strong> the shorter retention of the new tier applies from the downgrade date. Data older than the new limit is deleted within 7 days after the downgrade.</li>
+</ul>
+<h2>Deletion after contract end</h2>
+<ul>
+<li>When a contract ends, the workspace becomes read-only for 30 days so customers can export data.</li>
+<li>All customer data, including backups, is permanently deleted within <strong>60 days</strong> after the end of the contract. A deletion certificate is available to Enterprise customers on request.</li>
+</ul>
+<h2>Customer-initiated deletion</h2>
+<p>Workspace admins can delete individual data sources at any time. Deletion requests through the API (<code>DELETE /v2/sources/{id}</code>) are processed within 24 hours.</p>
+<h2>Frequently asked questions</h2>
+<p><strong>Do retention limits apply to metadata like monitor definitions?</strong> No. Monitor definitions, integration settings and users are kept for as long as the workspace exists.</p>
+<p><strong>Are trial workspaces subject to Starter retention?</strong> Trials use Growth retention during the trial period.</p>
+<p><strong>Where is the data stored?</strong> In the region chosen at signup (EU or US). See Atlas Pricing and Tiers for data residency options.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

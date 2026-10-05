@@ -1,0 +1,306 @@
+{
+  "generatedAt": "2026-10-04T23:38:35.858Z",
+  "base": "http://127.0.0.1:4444",
+  "results": [
+    {
+      "name": "chat-desktop",
+      "path": "/chat",
+      "formFactor": "desktop",
+      "finalUrl": "http://127.0.0.1:4444/chat",
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 1043.91995,
+        "lcpMs": 1365.2265999999997,
+        "tbtMs": 0,
+        "cls": 0.01222967021641421,
+        "speedIndexMs": 1043.91995,
+        "transferBytes": 896553
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.84,
+          "displayValue": "1.0 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.85,
+          "displayValue": "1.4 s"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 43 KiB"
+        },
+        {
+          "id": "font-display-insight",
+          "title": "Font display",
+          "score": 0.5,
+          "displayValue": "Est savings of 10 ms"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    },
+    {
+      "name": "search-desktop",
+      "path": "/search",
+      "formFactor": "desktop",
+      "finalUrl": "http://127.0.0.1:4444/search",
+      "scores": {
+        "performance": 95,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 1032.02565,
+        "lcpMs": 1296.0342000000003,
+        "tbtMs": 0,
+        "cls": 0.001193812385080115,
+        "speedIndexMs": 1032.02565,
+        "transferBytes": 842928
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.85,
+          "displayValue": "1.0 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.87,
+          "displayValue": "1.3 s"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 24 KiB"
+        },
+        {
+          "id": "font-display-insight",
+          "title": "Font display",
+          "score": 0.5,
+          "displayValue": "Est savings of 10 ms"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    },
+    {
+      "name": "collections-desktop",
+      "path": "/collections",
+      "formFactor": "desktop",
+      "finalUrl": "http://127.0.0.1:4444/collections",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 637.5172249999998,
+        "lcpMs": 1244.7397999999996,
+        "tbtMs": 0,
+        "cls": 0.0005505258952806234,
+        "speedIndexMs": 637.5172249999998,
+        "transferBytes": 854052
+      },
+      "failedAudits": [
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.88,
+          "displayValue": "1.2 s"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 22 KiB"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    },
+    {
+      "name": "admin-overview-desktop",
+      "path": "/admin/overview",
+      "formFactor": "desktop",
+      "finalUrl": "http://127.0.0.1:4444/admin/overview",
+      "scores": {
+        "performance": 95,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 982.7245999999999,
+        "lcpMs": 1203.6327999999996,
+        "tbtMs": 0,
+        "cls": 0.07269133535081576,
+        "speedIndexMs": 982.7245999999999,
+        "transferBytes": 986415
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.87,
+          "displayValue": "1.0 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.89,
+          "displayValue": "1.2 s"
+        },
+        {
+          "id": "valid-source-maps",
+          "title": "Missing source maps for large first-party JavaScript",
+          "score": 0,
+          "displayValue": null
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 100 KiB"
+        },
+        {
+          "id": "font-display-insight",
+          "title": "Font display",
+          "score": 0.5,
+          "displayValue": "Est savings of 10 ms"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    },
+    {
+      "name": "chat-uk-desktop",
+      "path": "/chat",
+      "formFactor": "desktop",
+      "finalUrl": "http://127.0.0.1:4444/chat",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 736.5117000000001,
+        "lcpMs": 1107.7126000000003,
+        "tbtMs": 0,
+        "cls": 0.01686394355791962,
+        "speedIndexMs": 736.5117000000001,
+        "transferBytes": 931508
+      },
+      "failedAudits": [
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 43 KiB"
+        },
+        {
+          "id": "font-display-insight",
+          "title": "Font display",
+          "score": 0.5,
+          "displayValue": "Est savings of 10 ms"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    },
+    {
+      "name": "chat-mobile",
+      "path": "/chat",
+      "formFactor": "mobile",
+      "finalUrl": "http://127.0.0.1:4444/chat",
+      "scores": {
+        "performance": 63,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "fcpMs": 5402.976299999998,
+        "lcpMs": 7053.9675,
+        "tbtMs": 23,
+        "cls": 0,
+        "speedIndexMs": 5402.976299999998,
+        "transferBytes": 896553
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.06,
+          "displayValue": "5.4 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.06,
+          "displayValue": "7.1 s"
+        },
+        {
+          "id": "speed-index",
+          "title": "Speed Index",
+          "score": 0.56,
+          "displayValue": "5.4 s"
+        },
+        {
+          "id": "interactive",
+          "title": "Time to Interactive",
+          "score": 0.52,
+          "displayValue": "7.1 s"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 43 KiB"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0,
+          "displayValue": null
+        }
+      ]
+    }
+  ]
+}

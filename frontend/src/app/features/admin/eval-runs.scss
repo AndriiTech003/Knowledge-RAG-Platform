@@ -1,0 +1,57 @@
+.kb-spacer {
+  flex: 1;
+}
+
+.start {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.small {
+  width: 120px;
+}
+
+.active {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.runs {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font: var(--mat-sys-label-large);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  th.kb-num,
+  td.kb-num {
+    text-align: right;
+  }
+}
+
+.run-name {
+  font-weight: 500;
+}
+
+.small-text {
+  font: var(--mat-sys-body-small);
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+}

@@ -1,0 +1,78 @@
+<div class="chat" [class.chat--panel]="store.sourcesPanel() !== null">
+  <nav class="chat__list" aria-label="Conversations" i18n-aria-label="@@chat.page.conversationsLabel">
+    <kb-conversation-list
+      [conversations]="store.conversations()"
+      [activeId]="store.activeId()"
+      [loading]="store.conversationsLoading()"
+      [query]="store.conversationQuery()"
+      (selected)="select($event)"
+      (newChat)="newChat()"
+      (searched)="onSearch($event)"
+      (renamed)="rename($event)"
+      (deleted)="remove($event)"
+    />
+  </nav>
+  <section class="chat__main" aria-label="Chat" i18n-aria-label="@@chat.page.chatLabel">
+    <header class="chat__header">
+      <h1 class="chat__title" data-testid="conversation-title">{{ conversationTitle() }}</h1>
+    </header>
+    @if (store.messagesLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    <div class="chat__scroll">
+      @if (store.thread().length === 0 && !store.messagesLoading()) {
+        <kb-empty-state
+          icon="forum"
+          title="Ask the knowledge base"
+          i18n-title="@@chat.page.emptyTitle"
+          message="Answers cite the documents you have access to. Hover a citation to preview it, click to open the page."
+          i18n-message="@@chat.page.emptyMessage"
+          testId="chat-empty"
+        >
+          <div class="chat__suggestions">
+            @for (q of suggestions; track q) {
+              <button mat-stroked-button type="button" (click)="ask(q)">{{ q }}</button>
+            }
+          </div>
+        </kb-empty-state>
+      } @else {
+        <kb-chat-thread
+          [messages]="store.thread()"
+          [fallbackCollections]="fallbackCollections()"
+          [activeSource]="activeSource()"
+          (citationOpened)="openCitation($event)"
+          (feedback)="sendFeedback($event)"
+        />
+      }
+    </div>
+    @if (store.error(); as error) {
+      @if (error.code === 'RATE_LIMITED' || error.code === 'DAILY_TOKEN_LIMIT') {
+        <div class="chat__limit" role="alert" data-testid="rate-limit">
+          <mat-icon aria-hidden="true">hourglass_top</mat-icon>
+          {{ error.userMessage }}
+          <button mat-button type="button" (click)="store.clearError()" i18n="@@common.dismiss">Dismiss</button>
+        </div>
+      }
+    }
+    <div class="kb-visually-hidden" aria-live="polite" aria-atomic="false" data-testid="live-region">{{ store.liveAnnouncement() }}</div>
+    <div class="chat__composer">
+      <kb-composer
+        [streaming]="store.isStreaming()"
+        [collections]="user.collections()"
+        [selectedCollections]="selectedCollections()"
+        (selectedCollectionsChange)="store.setSelectedCollections($event)"
+        (sent)="send($event)"
+        (stopped)="store.stop()"
+      />
+    </div>
+  </section>
+  @if (store.sourcesPanel() !== null) {
+    <kb-sources-panel
+      class="chat__panel"
+      [sources]="store.panelSources()"
+      [selected]="store.panelSelected()"
+      (sourceSelected)="store.selectSource($event)"
+      (closed)="store.closeSources()"
+    />
+  }
+</div>

@@ -1,0 +1,117 @@
+<div class="kb-page" data-testid="eval-compare">
+  <header class="kb-page-header">
+    <a mat-icon-button routerLink="/admin/eval" aria-label="Back to runs" i18n-aria-label="@@admin.backToRuns"><mat-icon>arrow_back</mat-icon></a>
+    <h1 i18n="@@admin.compare.title">Compare runs</h1>
+  </header>
+  @if (!a() || !b()) {
+    <kb-empty-state icon="compare_arrows" title="Select two runs" i18n-title="@@admin.compare.emptyTitle" message="Pick two finished runs on the Eval page to compare them question by question." i18n-message="@@admin.compare.emptyMessage" />
+  }
+  @if (compare.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (compare.value(); as c) {
+    <section class="pair">
+      <div class="kb-card">
+        <div class="tag" i18n="@@admin.compare.baseline">A · baseline</div>
+        <a [routerLink]="['/admin/eval/runs', c.a.id]">{{ c.a.config['name'] || c.a.id.slice(0, 8) }}</a>
+        <div class="kb-muted">{{ summary(c.a.config) }}</div>
+      </div>
+      <div class="kb-card">
+        <div class="tag" i18n="@@admin.compare.candidate">B · candidate</div>
+        <a [routerLink]="['/admin/eval/runs', c.b.id]">{{ c.b.config['name'] || c.b.id.slice(0, 8) }}</a>
+        <div class="kb-muted">{{ summary(c.b.config) }}</div>
+      </div>
+    </section>
+
+    <section class="metrics" data-testid="compare-metrics">
+      @for (m of headline; track m.key) {
+        <div class="metric kb-card">
+          <span class="metric__label">{{ m.label }}</span>
+          <span class="metric__value">{{ fmt(value(c.a.metrics, m.key), m.kind) }} → {{ fmt(value(c.b.metrics, m.key), m.kind) }}</span>
+          @if (c.deltas[m.key] !== undefined) {
+            <span [class]="'kb-delta-' + tone(c.deltas[m.key], m.higherIsBetter)">{{ fmtDelta(c.deltas[m.key], m.kind) }}</span>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="summary" data-testid="compare-summary">
+      <span class="pill pill--improved" i18n="@@admin.compare.summary.improved">{counts().improved, plural, one {{{ counts().improved }} improved} other {{{ counts().improved }} improved}}</span>
+      <span class="pill pill--worse" i18n="@@admin.compare.summary.worse">{counts().worse, plural, one {{{ counts().worse }} worse} other {{{ counts().worse }} worse}}</span>
+      <span class="pill" i18n="@@admin.compare.summary.unchanged">{counts().unchanged, plural, one {{{ counts().unchanged }} unchanged} other {{{ counts().unchanged }} unchanged}}</span>
+      @if (counts().added) {
+        <span class="pill" i18n="@@admin.compare.summary.new">{counts().added, plural, one {{{ counts().added }} new} other {{{ counts().added }} new}}</span>
+      }
+      @if (counts().removed) {
+        <span class="pill" i18n="@@admin.compare.summary.removed">{counts().removed, plural, one {{{ counts().removed }} removed} other {{{ counts().removed }} removed}}</span>
+      }
+    </section>
+
+    <div class="filters">
+      <mat-button-toggle-group [value]="changeFilter()" (change)="changeFilter.set($event.value)" aria-label="Change filter" i18n-aria-label="@@admin.compare.changeFilter">
+        <mat-button-toggle value="" i18n="@@admin.compare.filter.all">All</mat-button-toggle>
+        <mat-button-toggle value="improved" i18n="@@admin.compare.filter.improved">Improved</mat-button-toggle>
+        <mat-button-toggle value="worse" i18n="@@admin.compare.filter.worse">Worse</mat-button-toggle>
+        <mat-button-toggle value="unchanged" i18n="@@admin.compare.filter.unchanged">Unchanged</mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-select class="type-filter" [value]="typeFilter()" (valueChange)="typeFilter.set($event)" aria-label="Question type" i18n-aria-label="@@admin.questionType" data-testid="compare-type-filter">
+        <mat-option value="" i18n="@@admin.compare.allTypes">All question types</mat-option>
+        @for (t of types(); track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+      <span class="kb-muted" i18n="@@admin.compare.questionCount">{rows().length, plural, one {{{ rows().length }} question} other {{{ rows().length }} questions}}</span>
+    </div>
+
+    <div class="kb-table-wrap">
+      <table class="rows" data-testid="compare-rows">
+        <thead>
+          <tr>
+            <th scope="col" i18n="@@admin.compare.col.question">Question</th>
+            <th scope="col" i18n="@@admin.compare.col.type">Type</th>
+            <th scope="col" i18n="@@admin.compare.col.change">Change</th>
+            <th scope="col" class="kb-num" i18n="@@admin.compare.col.recall">Recall@8 A → B</th>
+            <th scope="col" class="kb-num" i18n="@@admin.compare.col.mrr">MRR A → B</th>
+            <th scope="col" class="kb-num" i18n="@@admin.compare.col.deltaScore">Δ score</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.question_id) {
+            <tr class="row" [attr.data-change]="row.change" (click)="toggle(row)" data-testid="compare-row">
+              <td><strong>{{ row.question_id }}</strong> {{ row.question }}</td>
+              <td>{{ row.question_type }}</td>
+              <td><span [class]="'pill pill--' + row.change">{{ changeLabel(row.change) }}</span></td>
+              <td class="kb-num">{{ rowMetric(row.a, 'recall@8') }} → {{ rowMetric(row.b, 'recall@8') }}</td>
+              <td class="kb-num">{{ rowMetric(row.a, 'mrr') }} → {{ rowMetric(row.b, 'mrr') }}</td>
+              <td class="kb-num">{{ row.delta === null ? '—' : fmtDelta(row.delta) }}</td>
+            </tr>
+            @if (expanded() === row.question_id) {
+              <tr class="detail">
+                <td colspan="6">
+                  <div class="detail__grid">
+                    <div>
+                      <h3>A</h3>
+                      <ol>
+                        @for (d of docs(row.a); track $index) {
+                          <li>{{ d }}</li>
+                        }
+                      </ol>
+                    </div>
+                    <div>
+                      <h3>B</h3>
+                      <ol>
+                        @for (d of docs(row.b); track $index) {
+                          <li>{{ d }}</li>
+                        }
+                      </ol>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,118 @@
+@if (detail.isLoading() && !detail.value()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+@if (detail.value(); as doc) {
+  <section class="head" data-testid="document-detail">
+    <a mat-icon-button [routerLink]="['/collections', collectionId(), 'documents']" aria-label="Back to documents" i18n-aria-label="@@collections.docDetail.back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <div class="head__title">
+      <h2>{{ doc.title }}</h2>
+      <div class="kb-muted">
+        {{ mimeLabel(doc.mime_type) }} ·
+        @if (doc.page_count !== null) {
+          <span i18n="@@collections.docDetail.pages">{doc.page_count, plural, one {{{ doc.page_count }} page} other {{{ doc.page_count }} pages}}</span>
+        } @else {
+          <span i18n="@@collections.docDetail.pagesUnknown">— pages</span>
+        }
+        · <span i18n="@@collections.docDetail.updated">updated {{ doc.updated_at | relativeTime }}</span>
+      </div>
+    </div>
+    <kb-status-badge [status]="liveStatus()" />
+    <a mat-stroked-button [routerLink]="['/documents', doc.id]" data-testid="document-open-viewer">
+      <mat-icon>visibility</mat-icon>
+      <span i18n="@@collections.documents.view">View</span>
+    </a>
+    @if (context.canEdit()) {
+      <button mat-stroked-button type="button" (click)="reindex()" data-testid="detail-reindex">
+        <mat-icon>autorenew</mat-icon>
+        <span i18n="@@collections.documents.reindex">Re-index</span>
+      </button>
+      <button mat-stroked-button type="button" class="danger" (click)="remove()" data-testid="detail-delete">
+        <mat-icon>delete</mat-icon>
+        <span i18n="@@common.delete">Delete</span>
+      </button>
+    }
+  </section>
+  @if (doc.error) {
+    <p class="error" role="alert">{{ doc.error }}</p>
+  }
+  <section class="stats">
+    <div class="stat kb-card">
+      <span class="stat__value kb-num">{{ doc.chunk_stats.chunks }}</span>
+      <span class="stat__label" i18n="@@collections.docDetail.statChunks">chunks</span>
+    </div>
+    <div class="stat kb-card">
+      <span class="stat__value kb-num">{{ doc.chunk_stats.tokens | number }}</span>
+      <span class="stat__label" i18n="@@collections.docDetail.statTokens">tokens</span>
+    </div>
+    <div class="stat kb-card">
+      <span class="stat__value kb-num">{{ doc.chunk_stats.embedded }}</span>
+      <span class="stat__label" i18n="@@collections.docDetail.statEmbedded">embedded</span>
+    </div>
+    <div class="stat stat--wide kb-card" data-testid="ingestion-stats">
+      <span class="stat__label" i18n="@@collections.docDetail.lastIngestion">Last ingestion</span>
+      <span>{{ statsText() }}</span>
+    </div>
+  </section>
+
+  <h3 i18n="@@collections.docDetail.history">Ingestion history</h3>
+  <div class="kb-table-wrap">
+    <table mat-table [dataSource]="doc.jobs" data-testid="ingestion-jobs">
+      <ng-container matColumnDef="kind">
+        <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.kind">Kind</th>
+        <td mat-cell *matCellDef="let job">{{ jobKindLabel(job.kind) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.status">Status</th>
+        <td mat-cell *matCellDef="let job"><kb-status-badge [status]="job.status" /></td>
+      </ng-container>
+      <ng-container matColumnDef="started">
+        <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.started">Started</th>
+        <td mat-cell *matCellDef="let job">{{ job.started_at | date: 'medium' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.duration">Duration</th>
+        <td mat-cell *matCellDef="let job">{{ jobDuration(job) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="stats">
+        <th mat-header-cell *matHeaderCellDef i18n="@@collections.jobs.result">Result</th>
+        <td mat-cell *matCellDef="let job">{{ job.error || statsOf(job) }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="jobColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: jobColumns"></tr>
+    </table>
+  </div>
+
+  <h3 i18n="@@collections.docDetail.chunks">Chunks</h3>
+  <ol class="chunks" data-testid="chunk-list">
+    @for (chunk of chunks(); track chunk.id) {
+      <li class="chunk kb-card" data-testid="chunk-item">
+        <div class="chunk__meta">
+          <span class="chunk__ordinal">#{{ chunk.ordinal }}</span>
+          @if (chunk.heading_path.length) {
+            <span class="chunk__path" data-testid="chunk-heading-path">{{ chunk.heading_path.join(' › ') }}</span>
+          }
+          <span class="kb-spacer"></span>
+          @if (chunk.page_start) {
+            <a [routerLink]="['/documents', doc.id]" [queryParams]="{ page: chunk.page_start, chunk: chunk.id }">
+              @if (chunk.page_end && chunk.page_end !== chunk.page_start) {
+                <span i18n="@@collections.docDetail.pageRange">p. {{ chunk.page_start }}–{{ chunk.page_end }}</span>
+              } @else {
+                <span i18n="@@collections.docDetail.page">p. {{ chunk.page_start }}</span>
+              }
+            </a>
+          }
+          <span class="kb-muted" i18n="@@collections.docDetail.chunkTokens">{chunk.token_count, plural, one {{{ chunk.token_count }} token} other {{{ chunk.token_count }} tokens}}</span>
+        </div>
+        <p class="chunk__text">{{ chunk.text }}</p>
+      </li>
+    }
+  </ol>
+  @if (chunksLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (nextCursor()) {
+    <button mat-stroked-button type="button" (click)="loadMore()" [disabled]="chunksLoading()" data-testid="chunks-more" i18n="@@collections.docDetail.loadMore">Load more</button>
+  }
+}

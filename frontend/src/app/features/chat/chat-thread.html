@@ -1,0 +1,81 @@
+<ol class="thread" aria-label="Conversation" i18n-aria-label="@@chat.thread.label">
+  @for (message of messages(); track message.id) {
+    <li class="msg" [class.msg--user]="message.role === 'user'" [attr.data-role]="message.role" data-testid="chat-message">
+      @if (message.role === 'user') {
+        <div class="bubble bubble--user" data-testid="user-message">{{ message.content }}</div>
+      } @else {
+        <div class="assistant" [attr.data-status]="message.status" data-testid="assistant-message">
+          @if (message.condensed) {
+            <div class="searched-for" data-testid="searched-for" i18n="@@chat.thread.searchedFor">Searched for: “{{ message.condensed }}”</div>
+          }
+          @switch (message.status) {
+            @case ('no_answer') {
+              <kb-no-answer-card [info]="message.noAnswer" [collections]="searched(message)" />
+            }
+            @case ('error') {
+              @if (message.content) {
+                <kb-message-content [message]="message" [activeN]="activeN(message)" (citationActivated)="citationOpened.emit({ messageId: message.id, n: $event })" />
+              }
+              <div class="error" role="alert" data-testid="message-error">
+                <mat-icon aria-hidden="true">error</mat-icon>
+                {{ errorLabel(message.errorCode) }}
+              </div>
+            }
+            @default {
+              @if (message.status === 'streaming' && !message.content) {
+                <div class="thinking" data-testid="thinking">
+                  <span></span><span></span><span></span>
+                  <span class="kb-visually-hidden" i18n="@@chat.thread.searching">Searching documents</span>
+                </div>
+              } @else {
+                <kb-message-content
+                  [message]="message"
+                  [activeN]="activeN(message)"
+                  (citationActivated)="citationOpened.emit({ messageId: message.id, n: $event })"
+                />
+              }
+              @if (message.status === 'stopped') {
+                <div class="stopped" data-testid="message-stopped" i18n="@@chat.thread.stopped">Generation stopped</div>
+              }
+            }
+          }
+          @if (message.warnings.length && message.status !== 'streaming') {
+            <ul class="warnings" data-testid="message-warnings">
+              @for (warning of message.warnings; track warning) {
+                <li><mat-icon aria-hidden="true">warning</mat-icon>{{ warningLabel(warning) }}</li>
+              }
+            </ul>
+          }
+          @if (message.status !== 'streaming') {
+            <div class="footer">
+              @let count = sourceCount(message);
+              @if (count > 0) {
+                <button
+                  mat-button
+                  type="button"
+                  (click)="citationOpened.emit({ messageId: message.id, n: null })"
+                  data-testid="open-sources"
+                >
+                  <mat-icon>library_books</mat-icon>
+                  <span i18n="@@chat.thread.sourceCount">{count, plural, one {{{ count }} source} other {{{ count }} sources}}</span>
+                </button>
+              }
+              @if (message.status === 'complete' || message.status === 'no_answer') {
+                <kb-feedback-controls
+                  [value]="message.feedback"
+                  (submitted)="feedback.emit({ messageId: message.id, rating: $event.rating, reason: $event.reason, comment: $event.comment })"
+                />
+              }
+              @if (message.usage; as usage) {
+                @let tokens = usage.output_tokens;
+                <span class="usage">
+                  <span i18n="@@chat.thread.tokenCount">{tokens, plural, one {{{ tokens }} token} other {{{ tokens }} tokens}}</span> · {{ usage.model }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </li>
+  }
+</ol>

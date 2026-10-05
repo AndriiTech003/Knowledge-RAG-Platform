@@ -1,0 +1,83 @@
+.head {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.error {
+  color: var(--mat-sys-error);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  display: grid;
+  gap: 2px;
+}
+
+.metric__label {
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.metric__value {
+  font: var(--mat-sys-title-large);
+  font-variant-numeric: tabular-nums;
+}
+
+h2 {
+  margin: 20px 0 8px;
+  font: var(--mat-sys-title-medium);
+}
+
+h3 {
+  margin: 10px 0 4px;
+  font: var(--mat-sys-title-small);
+}
+
+.types {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.results-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .type-filter {
+    width: 200px;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-high);
+  font: var(--mat-sys-body-small);
+}
+
+.docs {
+  margin: 0;
+  font: var(--mat-sys-body-small);
+}
+
+.pre {
+  white-space: pre-wrap;
+}

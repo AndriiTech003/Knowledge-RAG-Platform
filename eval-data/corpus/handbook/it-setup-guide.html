@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IT Setup Guide | Northwind Labs Intranet</title>
+<link rel="canonical" href="https://intranet.northwind.example/handbook/it-setup-guide">
+</head>
+<body>
+<header class="site-header"><a href="/">Northwind Labs Intranet</a>
+<nav><ul><li><a href="/handbook">Handbook</a></li><li><a href="/policies">Policies</a></li>
+<li><a href="/engineering">Engineering</a></li><li><a href="/search">Search</a></li></ul></nav></header>
+<div class="cookie-banner">We use cookies to improve the intranet. <button>Accept</button></div>
+<main><article>
+<h1>IT Setup Guide</h1>
+<p>This guide helps you set up your Northwind laptop and accounts on your first day. It takes about 60 minutes. IT Operations runs a live setup session every Monday at 10:00 Lisbon time and 10:00 Austin time for new joiners; you can also follow these steps on your own. If you get stuck, post in <strong>#it-help</strong> and include your laptop serial number.</p>
+<h2>1. Your laptop</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Standard laptop</th>
+<th>Refresh cycle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engineering, Data, Product Design</td>
+<td>MacBook Pro 14&quot; (M4 Pro, 36 GB RAM)</td>
+<td>Every 3 years</td>
+</tr>
+<tr>
+<td>All other roles</td>
+<td>MacBook Air 13&quot; (M4, 16 GB RAM)</td>
+<td>Every 4 years</td>
+</tr>
+<tr>
+<td>Windows users (on request, with manager approval)</td>
+<td>Lenovo ThinkPad X1 Carbon</td>
+<td>Every 4 years</td>
+</tr>
+</tbody>
+</table>
+<p>Every employee also receives a USB-C hub, a headset (Jabra Evolve2 55) and a laptop sleeve. Office-based employees find an external monitor at every hot desk. Additional peripherals can be requested in #it-help.</p>
+<p>Laptops are enrolled automatically in device management (Kandji for macOS, Intune for Windows) the first time you connect to the internet. Do not erase the laptop or create a second local account.</p>
+<h2>2. Activate Okta (single sign-on)</h2>
+<p>Okta is our single sign-on: you log in to Google Workspace, Slack, Jira, GitHub, Workday, Expensify, Salesforce and Notion through Okta.</p>
+<ol>
+<li>Open the &quot;Activate your Northwind Okta account&quot; email sent to your personal address the evening before you start. The link is valid for <strong>7 days</strong>.</li>
+<li>Choose a password of at least 14 characters (see POL-SEC-014 in the Information Security Policy).</li>
+<li>Install <strong>Okta Verify</strong> on your phone and scan the QR code. Okta Verify with number matching is the only allowed second factor; SMS is not supported.</li>
+<li>Sign in to the Okta dashboard at northwind.okta.example. All your apps appear as tiles.</li>
+</ol>
+<p>If the activation link has expired, ask in #it-help; IT will send a new one after verifying your identity on a video call.</p>
+<h2>3. Password manager</h2>
+<p>Install the 1Password app from Kandji Self Service and sign in with the invitation in your Northwind mailbox. Store every work password in your private 1Password vault. Shared team credentials live in team vaults, which your manager can grant.</p>
+<h2>4. Connect to the network</h2>
+<ul>
+<li>In the office, connect your laptop to <strong>NW-Corp</strong> with your Okta credentials. Personal phones use <strong>NW-Staff</strong>.</li>
+<li>Outside the office, the <strong>Tailscale</strong> VPN connects you to internal tools. It starts automatically and signs in through Okta.</li>
+</ul>
+<h2>5. Install your tools</h2>
+<p>Install apps only from Kandji Self Service (macOS) or Company Portal (Windows). The standard set is installed for you: Chrome, Slack, Zoom, Google Drive for desktop, 1Password, CrowdStrike Falcon and Tailscale. Engineers additionally get Docker Desktop, iTerm2 and a GitHub access request.</p>
+<h2>6. Check that your laptop is compliant</h2>
+<p>Open the device portal at devices.northwind.example. Your laptop should show a green &quot;Compliant&quot; status, which means disk encryption is on, the screen lock is set to 5 minutes and the operating system is up to date. Non-compliant laptops lose access to Google Workspace after 72 hours.</p>
+<h2>7. Getting help</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account or access issue</td>
+<td>#it-help, &quot;Access request&quot; workflow</td>
+</tr>
+<tr>
+<td>Laptop broken or damaged</td>
+<td>#it-help; a replacement is shipped within 2 working days</td>
+</tr>
+<tr>
+<td>Laptop lost or stolen</td>
+<td>Report in #security-help within 1 hour (POL-SEC-030)</td>
+</tr>
+<tr>
+<td>Urgent issue outside office hours</td>
+<td>Call the IT hotline +351 21 000 4410</td>
+</tr>
+</tbody>
+</table>
+<p>IT Operations answers #it-help between 08:00 and 20:00 Lisbon time and 08:00 to 18:00 Austin time on working days.</p>
+
+</article></main>
+<aside class="related"><h4>Related pages</h4><ul><li><a href="/handbook/welcome">Welcome</a></li></ul></aside>
+<footer class="site-footer">Copyright 2026 Northwind Labs. All rights reserved. Intranet v4.2</footer>
+</body>
+</html>

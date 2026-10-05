@@ -1,0 +1,84 @@
+<div class="list">
+  <div class="list__header">
+    <button mat-flat-button type="button" class="list__new" (click)="newChat.emit()" data-testid="new-conversation">
+      <mat-icon>add</mat-icon>
+      <span i18n="@@chat.list.newChat">New chat</span>
+    </button>
+    <label class="list__search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        placeholder="Search conversations"
+        i18n-placeholder="@@chat.list.search"
+        aria-label="Search conversations"
+        i18n-aria-label="@@chat.list.search"
+        [value]="query()"
+        (input)="onSearch($event)"
+        data-testid="conversation-search"
+      />
+    </label>
+  </div>
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (conversations().length === 0 && !loading()) {
+    @if (query()) {
+      <p class="list__empty" i18n="@@chat.list.noMatches">No conversations match.</p>
+    } @else {
+      <p class="list__empty" i18n="@@chat.list.empty">No conversations yet.</p>
+    }
+  }
+  <cdk-virtual-scroll-viewport itemSize="60" class="list__viewport" data-testid="conversation-list">
+    <div
+      *cdkVirtualFor="let conversation of conversations(); trackBy: trackById"
+      class="item"
+      [class.item--active]="conversation.id === activeId()"
+      data-testid="conversation-item"
+    >
+      @if (editingId() === conversation.id) {
+        <input
+          #editInput
+          class="item__edit"
+          [value]="title(conversation)"
+          aria-label="Conversation title"
+          i18n-aria-label="@@chat.list.titleLabel"
+          (keydown)="onEditKey($event, conversation, editInput.value)"
+          (blur)="commitRename(conversation, editInput.value)"
+          data-testid="conversation-rename-input"
+        />
+      } @else {
+        <button
+          type="button"
+          class="item__main"
+          (click)="selected.emit(conversation.id)"
+          (dblclick)="startRename(conversation)"
+          [attr.aria-current]="conversation.id === activeId() ? 'page' : null"
+        >
+          <span class="item__title">{{ title(conversation) }}</span>
+          <span class="item__time">{{ conversation.updated_at | relativeTime }}</span>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          class="item__menu"
+          [matMenuTriggerFor]="menu"
+          aria-label="Conversation actions"
+          i18n-aria-label="@@chat.list.actions"
+          data-testid="conversation-menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item type="button" (click)="startRename(conversation)" data-testid="conversation-rename">
+            <mat-icon>edit</mat-icon>
+            <span i18n="@@chat.list.rename">Rename</span>
+          </button>
+          <button mat-menu-item type="button" (click)="deleted.emit(conversation.id)" data-testid="conversation-delete">
+            <mat-icon>delete</mat-icon>
+            <span i18n="@@common.delete">Delete</span>
+          </button>
+        </mat-menu>
+      }
+    </div>
+  </cdk-virtual-scroll-viewport>
+</div>

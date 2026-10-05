@@ -1,0 +1,55 @@
+<div class="kb-page">
+  <header class="kb-page-header">
+    <h1 i18n="@@admin.overview.title">Overview</h1>
+    <span class="kb-spacer"></span>
+    <mat-button-toggle-group [value]="days()" (change)="days.set($event.value)" aria-label="Time range" i18n-aria-label="@@admin.overview.timeRange">
+      <mat-button-toggle [value]="7" i18n="@@admin.overview.days7">7 days</mat-button-toggle>
+      <mat-button-toggle [value]="30" i18n="@@admin.overview.days30">30 days</mat-button-toggle>
+      <mat-button-toggle [value]="90" i18n="@@admin.overview.days90">90 days</mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+  @if (overview.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (overview.value(); as o) {
+    <section class="tiles" data-testid="overview-tiles">
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.questions">Questions</span><span class="tile__value">{{ o.questions | number }}</span></div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.activeUsers">Active users</span><span class="tile__value">{{ o.active_users | number }}</span></div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.noAnswerRate">No-answer rate</span><span class="tile__value">{{ o.no_answer_rate | percent: '1.0-1' }}</span></div>
+      <div class="tile kb-card">
+        <span class="tile__label" i18n="@@admin.overview.feedback">Feedback</span>
+        <span class="tile__value"><mat-icon inline>thumb_up</mat-icon> {{ o.feedback_up }} <mat-icon inline>thumb_down</mat-icon> {{ o.feedback_down }}</span>
+      </div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.latency">Latency p50 / p95</span><span class="tile__value">{{ o.latency_ms.p50 ?? 0 | number: '1.0-0' }} / {{ o.latency_ms.p95 ?? 0 | number: '1.0-0' }} ms</span></div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.firstToken">First token p50 / p95</span><span class="tile__value">{{ o.first_token_ms.p50 ?? 0 | number: '1.0-0' }} / {{ o.first_token_ms.p95 ?? 0 | number: '1.0-0' }} ms</span></div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.cost">Cost</span><span class="tile__value">{{ o.cost_usd | currency: 'USD' : 'symbol' : '1.2-4' }}</span></div>
+      <div class="tile kb-card"><span class="tile__label" i18n="@@admin.overview.costPerQuestion">Cost / question</span><span class="tile__value">{{ o.cost_per_question_usd | currency: 'USD' : 'symbol' : '1.4-5' }}</span></div>
+    </section>
+    <section class="charts">
+      <div class="chart kb-card">
+        <h2 i18n="@@admin.overview.questionsPerDay">Questions per day</h2>
+        @defer (on viewport) {
+          <div echarts class="chart__canvas" [options]="questionsOptions()" data-testid="chart-questions"></div>
+        } @placeholder {
+          <kb-skeleton [lines]="5" />
+        }
+      </div>
+      <div class="chart kb-card">
+        <h2 i18n="@@admin.overview.latencyCost">Latency &amp; cost</h2>
+        @defer (on viewport) {
+          <div echarts class="chart__canvas" [options]="latencyOptions()"></div>
+        } @placeholder {
+          <kb-skeleton [lines]="5" />
+        }
+      </div>
+      <div class="chart chart--wide kb-card">
+        <h2 i18n="@@admin.overview.pipelineSteps">Pipeline steps (p50 / p95, ms)</h2>
+        @defer (on viewport) {
+          <div echarts class="chart__canvas" [options]="stepsOptions()"></div>
+        } @placeholder {
+          <kb-skeleton [lines]="5" />
+        }
+      </div>
+    </section>
+  }
+</div>

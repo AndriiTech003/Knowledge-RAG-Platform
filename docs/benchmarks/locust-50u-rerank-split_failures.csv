@@ -1,0 +1,3 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,search hybrid+rerank,HTTPError('500 Server Error: Internal Server Error for url: search hybrid+rerank'),7,2026-10-02T11:01:52Z,2026-10-02T11:02:13Z
+POST,chat (full stream),CatchResponseError('stream ended without done'),22,2026-10-02T11:01:50Z,2026-10-02T11:02:13Z
